@@ -15,4 +15,16 @@ public class Manager extends Employee{
     public void setManagedDepartment(Department managedDepartment) {
         this.managedDepartment = managedDepartment;
     }
+
+    ///TO-DO: adapt code by what will be happening in the repository
+    public void addEmployee(Employee employee){
+        employeeRepo.add(employee);
+    }
+    public void fireEmployee(Employee employee){
+        employeeRepo.remove(employee);
+    }
+    public void editEmployee(Employee employee){
+        employeeRepo.update(employee);
+    }
+
 }
