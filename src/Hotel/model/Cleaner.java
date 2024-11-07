@@ -18,7 +18,7 @@ public class Cleaner extends Employee implements CheckRoom{
 
     @Override
     public boolean checkRoom(Room room) { //only dirty rooms will have return value True
-        return room.getAvailability == "Dirty";
+        return room.getAvailability().equals("Dirty") ;
     }
 
     public void cleanRoom(Room room)  //can only be called for rooms that must be cleaned
