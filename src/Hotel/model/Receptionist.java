@@ -20,18 +20,18 @@ public class Receptionist extends Employee implements CheckRoom{
 
     @Override   //Interface
     public boolean checkRoom(Room room) {  //only available rooms will have return value True
-        return room.getAvailability() == "Avaible";
+        return room.getAvailability().equals("Avaible");
     }
 
     ///TO-DO: checkout (once a client is removed, the room becomes available)
     ///TO-DO: adapt code by what will be happening in the repository
-    void addClient(Client client) {
+    void addClient(Customer client) {
         customerRepo.add(client);
     }
-    void removeClient(Client client) {
+    void removeClient(Customer client) {
         customerRepo.remove(client);
     }
-    void editClient(Client client) {
+    void editClient(Customer client) {
         customerRepo.update(client);
     }
 }

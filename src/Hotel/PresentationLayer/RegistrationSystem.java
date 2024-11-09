@@ -1,4 +1,9 @@
-package Hotel.model;
+package Hotel.PresentationLayer;
+
+import Hotel.model.Cleaner;
+import Hotel.model.Employee;
+import Hotel.model.Manager;
+import Hotel.model.Receptionist;
 
 public class RegistrationSystem {
     private int id;
@@ -26,7 +31,7 @@ public class RegistrationSystem {
     }
 
     //Login is written from the UI/controller
-    void login(int id,String password) {
+    public void login(int id,String password) {
         EmployeeRepo employeeRepo = new EmployeeRepo();
         String role = ""; //wird die Rolle des Employees beinhalten
 

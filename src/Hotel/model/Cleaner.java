@@ -1,6 +1,6 @@
 package Hotel.model;
 
-public class Cleaner extends Employee implements CheckRoom{
+public class Cleaner extends Employee{
     private int floor;
 
     public Cleaner(int id, String name, int salary, String password, int floor) {
@@ -16,13 +16,5 @@ public class Cleaner extends Employee implements CheckRoom{
         this.floor = floor;
     }
 
-    @Override
-    public boolean checkRoom(Room room) { //only dirty rooms will have return value True
-        return room.getAvailability().equals("Dirty") ;
-    }
 
-    public void cleanRoom(Room room)  //can only be called for rooms that must be cleaned
-    {
-        room.setAvailability("Available");
-    }
 }
