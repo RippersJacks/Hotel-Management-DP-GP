@@ -5,8 +5,6 @@ public class Department implements HasId {
 
     private Integer id;
 
-    private int id;
-
     private String name;
     private ArrayList<Employee> employees;
 
