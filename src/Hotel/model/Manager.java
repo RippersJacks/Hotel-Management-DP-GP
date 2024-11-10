@@ -1,18 +1,18 @@
 package Hotel.model;
 
 public class Manager extends Employee{
-    private Department managedDepartment;
+    private Integer managedDepartmentID;
 
-    public Manager(Integer id, String name, int salary, String password, Department managedDepartment) {
+    public Manager(Integer id, String name, int salary, String password, Integer managedDepartment) {
         super(id, name, salary, password);
-        this.managedDepartment = managedDepartment;
+        this.managedDepartmentID = managedDepartment;
     }
 
-    public Department getManagedDepartment() {
-        return managedDepartment;
+    public Integer getManagedDepartmentID() {
+        return managedDepartmentID;
     }
 
-    public void setManagedDepartment(Department managedDepartment) {
-        this.managedDepartment = managedDepartment;
+    public void setManagedDepartmentID(Integer managedDepartmentID) {
+        this.managedDepartmentID = managedDepartmentID;
     }
 }
