@@ -5,6 +5,7 @@ import Hotel.repository.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class HotelService{
     private final Repository<Room> roomRepository;
@@ -91,20 +92,53 @@ public class HotelService{
         customerRepository.delete(clientID);
     }
 
-    void updateClient(Customer client) {
-        customerRepository.update(client);
-    }
+    void updateClient(Customer client) {customerRepository.update(client);}
     //--------------------------------------------------
 
 
 
     //-----------------MANAGER SECTION------------------
-    public void createEmployee(Employee employee){
-        employeeRepository.create(employee);
+    public void createEmployee(String type, String name, int salary, String password){
+        //id of customers autoincrements (searches for maximum id and then +1)
+        Integer id = 0;
+        List<Employee> employeeList = employeeRepository.getAll();
+        for (Employee employee : employeeList) {if (id < employee.getId()) id = employee.getId();}
+        id += 1;
+
+        Scanner sc = new Scanner(System.in);
+        //TODO: Conditia daca nu ii bun type-u
+        if (type.equalsIgnoreCase("Cleaner")) {             //Checks what type of employee we add ignoring the case
+
+            System.out.println("Enter employee floor: ");
+            int floor = sc.nextInt();
+            Employee employee = new Cleaner(id, name, salary, password, floor);
+            employeeRepository.create(employee);
+        }
+        else if (type.equalsIgnoreCase("Receptionist")){
+            ArrayList<String> languages = new ArrayList<>();
+            String language = " ";
+            while (!language.equalsIgnoreCase("stop")){
+                System.out.println("Enter a language: ");
+                language = sc.nextLine();
+                languages.add(language);
+            }
+            Employee employee = new Receptionist(id, name, salary, password, languages);
+            employeeRepository.create(employee);
+        }
+        else if (type.equalsIgnoreCase("Manager")){
+            System.out.println("Enter departmentId: ");
+            int departmentId = sc.nextInt();
+            Employee employee = new Cleaner(id, name, salary, password, departmentId);
+            employeeRepository.create(employee);
+        }
     }
-    public void deleteEmployee(Employee employee){
-        employeeRepository.delete(employee.getId());
+
+
+    public void deleteEmployee(Integer id){
+        employeeRepository.delete(id);
     }
+
+
     public void updateEmployee(Employee employee){
         employeeRepository.update(employee);
     }

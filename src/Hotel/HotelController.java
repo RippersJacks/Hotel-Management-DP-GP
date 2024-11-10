@@ -1,8 +1,8 @@
 package Hotel;
 
-import Hotel.model.Customer;
-import Hotel.model.Room;
+import Hotel.model.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -33,7 +33,6 @@ public class HotelController {
             else System.out.println("Room " + roomID + " not found");
     }
     //-------------------------------------------
-
 
 
     //-----------RECEPTIONIST SECTION------------
@@ -69,7 +68,67 @@ public class HotelController {
 
 
     //-------------MANAGER SECTION---------------
+    public void createEmployee(){
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter employee name: ");
+        String name = sc.nextLine();
+        System.out.println("Enter employee salary: ");
+        int salary = sc.nextInt();
+        System.out.println("Enter employee password: ");
+        String password = sc.nextLine();
+        System.out.println("Enter employee role: ");
+        String role = sc.nextLine();
+        hotelService.createEmployee(role, name, salary, password);
+    }
 
+
+    public void deleteEmployee(){
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter customer id to be deleted: ");
+        Integer id = sc.nextInt();
+
+        hotelService.deleteEmployee(id);
+    }
+
+    //TODO Type-ul este tipul de employee care va fi updatat,
+    // dar type-ul trebuie cautat in functie de Id-u primit
+    public void updateEmployee(String type){
+        Scanner sc = new Scanner(System.in);
+
+        System.out.println("Enter employee id to be updated: ");
+        Integer id = sc.nextInt();
+        System.out.println("Enter employee name: ");
+        String newName = sc.nextLine();
+        System.out.println("Enter employee salary: ");
+        int newSalary = sc.nextInt();
+        System.out.println("Enter employee password: ");
+        String newPassword = sc.nextLine();
+
+        if (type.equalsIgnoreCase("Manager")){
+            System.out.println("Enter managed department Id:");
+            Integer newDepartmentId = sc.nextInt();
+            Employee employee = new Manager(id,newName, newSalary, newPassword, newDepartmentId);
+            hotelService.updateEmployee(employee);
+        }
+        else if(type.equalsIgnoreCase("Cleaner")){
+            System.out.println("Enter floor number:");
+            int newFloorNumber = sc.nextInt();
+            Employee employee = new Manager(id,newName, newSalary, newPassword, newFloorNumber);
+            hotelService.updateEmployee(employee);
+        }
+        else if (type.equalsIgnoreCase("Receptionist")) {
+            ArrayList<String> newLanguages = new ArrayList<>();
+            String language = " ";
+            while (!language.equalsIgnoreCase("stop")){         //when the user types "stop" the language adding stops
+                System.out.println("Enter a language: ");
+                language = sc.nextLine();
+                newLanguages.add(language);
+            }
+            Employee employee = new Receptionist(id, newName, newSalary, newPassword, newLanguages);
+            hotelService.updateEmployee(employee);
+        }
+
+    }
 
     //-------------------------------------------
 }
