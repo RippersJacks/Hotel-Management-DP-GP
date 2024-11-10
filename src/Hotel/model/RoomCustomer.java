@@ -2,7 +2,7 @@ package Hotel.model;
 import java.util.Date;
 
 
-public class RoomCustomer {
+public class RoomCustomer implements HasId {
     private int id;
     private int roomId;
     private int customerId;
@@ -14,8 +14,8 @@ public class RoomCustomer {
         this.customerId = customerId;
         this.date = date;
     }
-
-    public int getId() {
+    @Override
+    public Integer getId() {
         return id;
     }
 
