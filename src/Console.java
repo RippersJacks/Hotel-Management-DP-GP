@@ -26,11 +26,12 @@ public class Console {
 
     public static void main(String[] args) throws InterruptedException {
         Repository<Employee> employeeRepository = createInMemoryEmployeeRepository();
+        Repository<Department> departmentRepository = createInMemoryDepartmentRepository();
         Repository<Room> roomRepository = createInMemoryRoomRepository();
         Repository<Customer> customerRepository = createInMemoryCustomerRepository();
         Repository<RoomCustomer> roomCustomerRepository = createInMemoryRoomCustomerRepository();
 
-        HotelService hotelService = new HotelService(roomRepository, employeeRepository,customerRepository,roomCustomerRepository);
+        HotelService hotelService = new HotelService(roomRepository, employeeRepository,customerRepository,departmentRepository,roomCustomerRepository);
         HotelController hotelController = new HotelController(hotelService);
 
         Console console = new Console(hotelController);
@@ -68,7 +69,7 @@ public class Console {
      *
      * @return The in-memory repository for departments.
      */
-    private static Repository<Department> createInMemoryRoomRepository() {
+    private static Repository<Department> createInMemoryDepartmentRepository() {
         Repository<Department> departmentRepo = new InMemoryRepository<>();
 
 
@@ -77,6 +78,7 @@ public class Console {
         departmentRepo.getAll().forEach(System.out::println);
         return departmentRepo;
     }
+
 
     ///TO-DO: createInMemory pt Rooms, Customers si RoomCustomer sa extraga din acestea
 }
