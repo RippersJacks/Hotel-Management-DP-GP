@@ -1,6 +1,6 @@
 package Hotel.PresentationLayer;
 
-import Hotel.ControllerLayer.CleanerController;
+import Hotel.HotelController;
 import java.util.Scanner;
 
 public class CleanerUI {
@@ -14,7 +14,7 @@ public class CleanerUI {
         Scanner sc = new Scanner(System.in);
         int option = sc.nextInt();
 
-        CleanerController controller = new CleanerController();
+        HotelController controller = new HotelController();
 
         if (option == 1){
             controller.checkDirtyRoomsValidate();
