@@ -10,14 +10,6 @@ public class HotelService{
     private final Repository<Room> roomRepository;
     private final Repository<Employee> employeeRepository;
     private final Repository<Customer> customerRepository;
-
-    private final Repository<RoomCustomer> roomCustomerRepository;
-
-    public HotelService(Repository<Room> roomRepository, Repository<Employee> employeeRepository, Repository<Customer> customerRepository, Repository<RoomCustomer> roomCustomerRepository) {
-        this.roomRepository = roomRepository;
-        this.employeeRepository = employeeRepository;
-        this.customerRepository = customerRepository;
-      
     private final Repository<Department> departmentRepository;
     private final Repository<RoomCustomer> roomCustomerRepository;
 
