@@ -2,20 +2,20 @@ package Hotel.model;
 import java.util.Date;
 
 
-public class RoomCustomer {
-    private int id;
+public class RoomCustomer implements HasId {
+    private Integer id;
     private int roomId;
     private int customerId;
     private Date date;
 
-    public RoomCustomer(int id, int roomId, int customerId, Date date) {
+    public RoomCustomer(Integer id, int roomId, int customerId, Date date) {
         this.id = id;
         this.roomId = roomId;
         this.customerId = customerId;
         this.date = date;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 

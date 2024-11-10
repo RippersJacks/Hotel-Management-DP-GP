@@ -1,10 +1,7 @@
 package Hotel;
 
-import Hotel.model.Customer;
-import Hotel.model.Employee;
+import Hotel.model.*;
 import Hotel.repository.Repository;
-import Hotel.model.Cleaner;
-import Hotel.model.Room;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,11 +10,13 @@ public class HotelService{
     private final Repository<Room> roomRepository;
     private final Repository<Employee> employeeRepository;
     private final Repository<Customer> customerRepository;
+    private final Repository<RoomCustomer> roomCustomerRepository;
 
-    public HotelService(Repository<Room> roomRepository, Repository<Employee> employeeRepository, Repository<Customer> customerRepository) {
+    public HotelService(Repository<Room> roomRepository, Repository<Employee> employeeRepository, Repository<Customer> customerRepository, Repository<RoomCustomer> roomCustomerRepository) {
         this.roomRepository = roomRepository;
         this.employeeRepository = employeeRepository;
         this.customerRepository = customerRepository;
+        this.roomCustomerRepository = roomCustomerRepository;
     }
 
 
@@ -59,13 +58,31 @@ public class HotelService{
 
 
     //---------------RECEPTIONIST SECTION---------------
-    ///TO-DO: checkout (once a client is removed, the room becomes available)
+    ///TO-DO: checkout (once a client is removed, the room becomes dirty(no longer unavailable))
     void addClient(Customer client) {
         customerRepository.create(client);
     }
+
     void removeClient(Customer client) {
+
+        //Search for the room in which the customer stayed in order to change its availability; used crossing table for this
+        List<RoomCustomer> roomCustomerList = roomCustomerRepository.getAll();
+        Integer roomID = null;
+
+        for (RoomCustomer roomCustomer : roomCustomerList) {
+            if (client.getId().equals(roomCustomer.getCustomerId()))
+            {
+                roomID = roomCustomer.getRoomId();
+            }
+        }
+
+        Room changedRoom = roomRepository.get(roomID);
+        changedRoom.setAvailability("Dirty");
+        roomRepository.update(changedRoom);
+
         customerRepository.delete(client.getId());
     }
+
     void editClient(Customer client) {
         customerRepository.update(client);
     }
