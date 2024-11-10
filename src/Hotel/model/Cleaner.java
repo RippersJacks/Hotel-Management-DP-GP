@@ -1,9 +1,9 @@
 package Hotel.model;
 
-public class Cleaner extends Employee{
+public class Cleaner extends Employee implements CheckRoom {
     private int floor;
 
-    public Cleaner(int id, String name, int salary, String password, int floor) {
+    public Cleaner(Integer id, String name, int salary, String password, int floor) {
         super(id, name, salary, password);
         this.floor = floor;
     }
@@ -17,4 +17,8 @@ public class Cleaner extends Employee{
     }
 
 
+    @Override
+    public boolean checkRoom(Room room) {
+        return room.getAvailability().equals("Dirty");
+    }
 }

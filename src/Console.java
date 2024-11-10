@@ -1,4 +1,4 @@
-import Hotel.PresentationLayer.RegistrationSystem;
+import Hotel.model.RegistrationSystem;
 
 import java.util.Scanner;
 
