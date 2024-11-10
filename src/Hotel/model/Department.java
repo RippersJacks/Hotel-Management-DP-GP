@@ -1,7 +1,7 @@
 package Hotel.model;
 import java.util.ArrayList;
 
-public class Department {
+public class Department implements HasId {
     private int id;
     private String name;
     private ArrayList<Employee> employees;
@@ -11,8 +11,8 @@ public class Department {
         this.name = name;
         this.employees = employees;
     }
-
-    public int getId() {
+@Override
+    public Integer getId() {
         return id;
     }
 
