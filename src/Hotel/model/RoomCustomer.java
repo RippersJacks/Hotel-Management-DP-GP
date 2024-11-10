@@ -4,16 +4,17 @@ import java.util.Date;
 
 public class RoomCustomer implements HasId {
     private Integer id;
-    private int id;
     private int roomId;
     private int customerId;
-    private Date date;
+    private Date fromDate;
+    private Date untilDate;
 
-    public RoomCustomer(Integer id, int roomId, int customerId, Date date) {
+    public RoomCustomer(Integer id, int roomId, int customerId, Date fromDate, Date untilDate) {
         this.id = id;
         this.roomId = roomId;
         this.customerId = customerId;
-        this.date = date;
+        this.fromDate = fromDate;
+        this.untilDate = untilDate;
     }
 
 
@@ -42,12 +43,16 @@ public class RoomCustomer implements HasId {
         this.customerId = customerId;
     }
 
-    public Date getDate() {
-        return date;
+    public Date getFromDate() {
+        return fromDate;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setFromDate(Date date) {
+        this.fromDate = date;
     }
+
+    public Date getUntilDate() {return untilDate;}
+
+    public void setUntilDate(Date untilDate) {this.untilDate = untilDate;}
 
 }
