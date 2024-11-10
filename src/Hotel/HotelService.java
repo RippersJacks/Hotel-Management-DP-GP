@@ -108,15 +108,16 @@ public class HotelService{
         Scanner sc = new Scanner(System.in);
         //TODO: Conditia daca nu ii bun type-u
         if (type.equalsIgnoreCase("Cleaner")) {             //Checks what type of employee we add ignoring the case
-
             System.out.println("Enter employee floor: ");
             int floor = sc.nextInt();
+
             Employee employee = new Cleaner(id, name, salary, password, floor);
             employeeRepository.create(employee);
         }
         else if (type.equalsIgnoreCase("Receptionist")){
             ArrayList<String> languages = new ArrayList<>();
             String language = " ";
+
             while (!language.equalsIgnoreCase("stop")){
                 System.out.println("Enter a language: ");
                 language = sc.nextLine();

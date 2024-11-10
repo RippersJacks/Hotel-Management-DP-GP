@@ -74,6 +74,7 @@ public class HotelController {
         String name = sc.nextLine();
         System.out.println("Enter employee salary: ");
         int salary = sc.nextInt();
+        sc.nextLine();
         System.out.println("Enter employee password: ");
         String password = sc.nextLine();
         System.out.println("Enter employee role: ");

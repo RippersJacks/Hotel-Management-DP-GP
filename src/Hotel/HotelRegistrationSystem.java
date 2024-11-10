@@ -21,6 +21,7 @@ public class HotelRegistrationSystem {
         Scanner sc = new Scanner(System.in);
         System.out.println("Please enter your id: ");
         int id = sc.nextInt();
+        sc.nextLine();
         System.out.println("Please enter your password: ");
         String password = sc.nextLine();
 

@@ -21,8 +21,82 @@ public class Console {
     }
 
     public void run(){
-        HotelRegistrationSystem system = new HotelRegistrationSystem();
-        system.login();
+        HotelRegistrationSystem system = new HotelRegistrationSystem(createInMemoryEmployeeRepository());
+        String role = system.login();
+
+        Scanner sc = new Scanner(System.in);
+
+        if (role.equalsIgnoreCase("Receptionist")){
+            System.out.println("You are a " + role);
+            System.out.println("""
+                    Choose what you want to do
+                    1. Add a new client
+                    2. Remove a client
+                    3. Update a client
+                    """);
+            System.out.println("Enter your choice: ");
+            int choice = sc.nextInt();
+            switch(choice){
+                case 1:
+                    hotelController.createClientValidate();
+                    break;
+                case 2:
+                    hotelController.deleteClientValidate();
+                    break;
+                case 3:
+                    hotelController.updateClientValidate();
+                    break;
+
+            }
+        }
+        else if (role.equalsIgnoreCase("Manager")){
+            System.out.println("You are a " + role);
+            System.out.println("""
+                    Choose what you want to do
+                    1. Add a new employee
+                    2. Remove an employee
+                    3. Update an employee
+                    """);
+            System.out.println("Enter your choice: ");
+            int choice = sc.nextInt();
+            switch(choice){
+                case 1:
+                    hotelController.createEmployee();
+                    break;
+                case 2:
+                    hotelController.deleteEmployee();
+                    break;
+                case 3:
+                    hotelController.updateEmployee("Receptionist"); //TODO Aici nu trebuie sa fie parametru asta
+                    break;
+            }
+        }
+        else if (role.equalsIgnoreCase("Cleaner")){
+            System.out.println("You are a " + role);
+            System.out.println("""
+                    Choose what you want to do
+                    1. See all the dirty rooms
+                    2. Clean a room
+                    """);
+            System.out.println("Enter your choice: ");
+            int choice = sc.nextInt();
+
+            switch (choice){
+                case 1 :
+                    hotelController.checkDirtyRoomsValidate();
+                    break;
+                case 2 :
+                    System.out.println("Write the id of the cleaned room:");
+                    int roomId = sc.nextInt();
+                    sc.nextLine();
+                    hotelController.cleanRoomValidate(roomId);
+                    break;
+            }
+        }
+        else {
+            System.out.println("The information you entered can't be found in the database.");
+        }
+
     }
 
 
@@ -64,6 +138,8 @@ public class Console {
         employeeRepository.create(new Manager(11,"Victor",4000,"1892WorchestershireSauce!?##Vice",8115));
 
         return employeeRepository;
+
+
     }
 
     /**
@@ -79,13 +155,13 @@ public class Console {
 
         ArrayList<Employee> cleaners = new ArrayList<>();
         for (Employee employee : employees) {
-            if (employee instanceof Cleaner) {cleaners.add((Cleaner) employee);}
+            if (employee instanceof Cleaner) {cleaners.add(employee);}
         }
         departmentRepo.create(new Department(9215, "Cleaning Department", cleaners));
 
         ArrayList<Employee> receptionists = new ArrayList<>();
         for (Employee employee : employees) {
-            if (employee instanceof Receptionist) {cleaners.add((Receptionist) employee);}
+            if (employee instanceof Receptionist) {cleaners.add(employee);}
         }
         departmentRepo.create(new Department(9215, "Cleaning Department", receptionists));
 
@@ -103,7 +179,7 @@ public class Console {
     private static Repository<Room> createInMemoryRoomRepository(){
         Repository<Room> roomRepo = new InMemoryRepository<>();
         roomRepo.create(new Room(50, 2, 210, "Twin Room", 80, "Unavailable"));
-        roomRepo.create(new Room(51, 2, 211, "Queen Room", 200, "Available"));
+        roomRepo.create(new Room(51, 2, 211, "Queen Room", 200, "Dirty"));
         roomRepo.create(new Room(58, 4, 440, "Suite", 450, "Unavailable"));
         return roomRepo;
     }
