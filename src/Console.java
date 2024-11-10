@@ -7,6 +7,8 @@ import Hotel.repository.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Scanner;
 import java.util.stream.IntStream;
 
@@ -91,6 +93,59 @@ public class Console {
         return departmentRepo;
     }
 
+    /**
+     * Creates an in-memory repository for rooms and populates it with some initial data.
+     *
+     * @return The in-memory repository for rooms.
+     */
 
-    ///TO-DO: createInMemory pt Rooms, Customers si RoomCustomer sa extraga din acestea
+
+    private static Repository<Room> createInMemoryRoomRepository(){
+        Repository<Room> roomRepo = new InMemoryRepository<>();
+        roomRepo.create(new Room(50, 2, 210, "Twin Room", 80, "Unavailable"));
+        roomRepo.create(new Room(51, 2, 211, "Queen Room", 200, "Available"));
+        roomRepo.create(new Room(58, 4, 440, "Suite", 450, "Unavailable"));
+        return roomRepo;
+    }
+
+    /**
+     * Creates an in-memory repository for customers and populates it with some initial data.
+     *
+     * @return The in-memory repository for customers.
+     */
+
+    private static Repository<Customer> createInMemoryCustomerRepository(){
+        Repository<Customer> customerRepo = new InMemoryRepository<>();
+        customerRepo.create(new Customer(1000, "Harry Bergenson"));
+        customerRepo.create(new Customer(1002, "Tamara Smith"));
+        customerRepo.create(new Customer(1001, "Julia Beta"));
+        return customerRepo;
+    }
+
+
+    /**
+     * Creates an in-memory repository for roomCustomers and populates it with some initial data.
+     *
+     * @return The in-memory repository for roomCustomers.
+     */
+
+    private static Repository<RoomCustomer> createInMemoryRoomCustomerRepository(){
+        Repository<RoomCustomer> roomCustomerRepo = new InMemoryRepository<>();
+        Calendar calendar = Calendar.getInstance();                                    //calendar is used for creating the date objects
+        calendar.set(2024, Calendar.NOVEMBER, 16);
+        Date fromDate = calendar.getTime();
+        calendar.set(2024, Calendar.NOVEMBER, 22 );
+        Date untilDate = calendar.getTime();
+        roomCustomerRepo.create(new RoomCustomer(4, 50, 1000, fromDate, untilDate));
+
+        calendar.set(2024, Calendar.OCTOBER, 10);
+        fromDate = calendar.getTime();
+        calendar.set(2024, Calendar.OCTOBER, 23 );
+        untilDate = calendar.getTime();
+        roomCustomerRepo.create(new RoomCustomer(5, 58, 1001, fromDate, untilDate));
+
+        return roomCustomerRepo;
+    }
+
+
 }

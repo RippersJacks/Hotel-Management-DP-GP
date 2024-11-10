@@ -4,7 +4,6 @@ import java.util.ArrayList;
 public class Department implements HasId {
 
     private Integer id;
-
     private String name;
     private ArrayList<Employee> employees;
 

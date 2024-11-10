@@ -8,7 +8,7 @@ public class Customer implements HasId {
         this.id = id;
         this.name = name;
     }
-
+    @Override
     public Integer getId() {
         return id;
     }
