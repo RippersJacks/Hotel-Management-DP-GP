@@ -1,4 +1,4 @@
-package Hotel.RepositoryLayer;
+package Hotel.repository;
 
 import java.util.HashMap;
 import java.util.List;

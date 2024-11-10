@@ -1,15 +1,15 @@
 package Hotel.model;
 
-public class Customer {
-    private int id;
+public class Customer implements HasId {
+    private Integer id;
     private String name;
 
-    public Customer(int id, String name) {
+    public Customer(Integer id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 

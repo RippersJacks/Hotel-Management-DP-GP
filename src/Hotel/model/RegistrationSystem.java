@@ -1,9 +1,4 @@
-package Hotel.PresentationLayer;
-
-import Hotel.model.Cleaner;
-import Hotel.model.Employee;
-import Hotel.model.Manager;
-import Hotel.model.Receptionist;
+package Hotel.model;
 
 public class RegistrationSystem {
     private int id;

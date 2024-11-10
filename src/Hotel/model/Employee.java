@@ -1,19 +1,20 @@
 package Hotel.model;
 
-public abstract class Employee {
-    private int id;
+public abstract class Employee implements HasId{
+    private Integer id;
     private String name;
     private int salary;
     private String password;
 
-    public Employee(int id, String name, int salary, String password) {
+    public Employee(Integer id, String name, int salary, String password) {
         this.id = id;
         this.name = name;
         this.salary = salary;
         this.password = password;
     }
 
-    public int getId() {
+    @Override
+    public Integer getId() {
         return id;
     }
 
