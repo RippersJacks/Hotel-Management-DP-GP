@@ -1,6 +1,6 @@
 package Hotel.model;
 
-public class Room {
+public class Room implements HasId {
     private int id;
     private int floor;
     private int number;
@@ -37,7 +37,8 @@ public class Room {
         return floor;
     }
 
-    public int getId() {
+    @Override
+    public Integer getId() {
         return id;
     }
 

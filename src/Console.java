@@ -1,11 +1,9 @@
-package Hotel.PresentationLayer;
+import Hotel.PresentationLayer.RegistrationSystem;
 
 import java.util.Scanner;
 
 public class Console {
-    public void run() throws InterruptedException {
-        System.out.println("Booting up system...");
-        wait(1);
+    public void run(){
 
         Scanner sc = new Scanner(System.in);
         System.out.println("Please enter your id: ");
@@ -15,5 +13,11 @@ public class Console {
 
         RegistrationSystem system = new RegistrationSystem(id, password);
         system.login(id,password);
+    }
+
+
+    public static void main(String[] args) throws InterruptedException {
+        Console console = new Console();
+        console.run();
     }
 }
