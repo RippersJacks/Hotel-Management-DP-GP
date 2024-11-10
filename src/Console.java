@@ -74,8 +74,20 @@ public class Console {
     private static Repository<Department> createInMemoryDepartmentRepository() {
         Repository<Department> departmentRepo = new InMemoryRepository<>();
 
+        List<Employee> employees = new ArrayList<>();
+        employees = createInMemoryEmployeeRepository().getAll();
 
-        departmentRepo.create(new Department(9215, "Cleaning Department", );
+        ArrayList<Employee> cleaners = new ArrayList<>();
+        for (Employee employee : employees) {
+            if (employee instanceof Cleaner) {cleaners.add((Cleaner) employee);}
+        }
+        departmentRepo.create(new Department(9215, "Cleaning Department", cleaners));
+
+        ArrayList<Employee> receptionists = new ArrayList<>();
+        for (Employee employee : employees) {
+            if (employee instanceof Receptionist) {cleaners.add((Receptionist) employee);}
+        }
+        departmentRepo.create(new Department(9215, "Cleaning Department", receptionists));
 
         departmentRepo.getAll().forEach(System.out::println);
         return departmentRepo;

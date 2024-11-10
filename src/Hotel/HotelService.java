@@ -60,19 +60,25 @@ public class HotelService{
 
 
     //---------------RECEPTIONIST SECTION---------------
-    ///TO-DO: checkout (once a client is removed, the room becomes dirty(no longer unavailable))
-    void addClient(Customer client) {
+    void createClient(String name) {
+        //id of customers autoincrements (searches for maximum id and then +1)
+        Integer id = 0;
+        List<Customer> customerList = customerRepository.getAll();
+        for (Customer customer : customerList) {if (id < customer.getId()) id = customer.getId();}
+        id += 1;
+
+        Customer client = new Customer(id,name);
         customerRepository.create(client);
     }
 
-    void removeClient(Customer client) {
+    void deleteClient(Integer clientID) {
 
         //Search for the room in which the customer stayed in order to change its availability; used crossing table for this
         List<RoomCustomer> roomCustomerList = roomCustomerRepository.getAll();
         Integer roomID = null;
 
         for (RoomCustomer roomCustomer : roomCustomerList) {
-            if (client.getId().equals(roomCustomer.getCustomerId()))
+            if (clientID.equals(roomCustomer.getCustomerId()))
             {
                 roomID = roomCustomer.getRoomId();
             }
@@ -82,10 +88,10 @@ public class HotelService{
         changedRoom.setAvailability("Dirty");
         roomRepository.update(changedRoom);
 
-        customerRepository.delete(client.getId());
+        customerRepository.delete(clientID);
     }
 
-    void editClient(Customer client) {
+    void updateClient(Customer client) {
         customerRepository.update(client);
     }
     //--------------------------------------------------
@@ -93,13 +99,13 @@ public class HotelService{
 
 
     //-----------------MANAGER SECTION------------------
-    public void addEmployee(Employee employee){
+    public void createEmployee(Employee employee){
         employeeRepository.create(employee);
     }
-    public void fireEmployee(Employee employee){
+    public void deleteEmployee(Employee employee){
         employeeRepository.delete(employee.getId());
     }
-    public void editEmployee(Employee employee){
+    public void updateEmployee(Employee employee){
         employeeRepository.update(employee);
     }
     //--------------------------------------------------
