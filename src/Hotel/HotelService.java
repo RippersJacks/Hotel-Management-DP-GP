@@ -10,12 +10,22 @@ public class HotelService{
     private final Repository<Room> roomRepository;
     private final Repository<Employee> employeeRepository;
     private final Repository<Customer> customerRepository;
+
     private final Repository<RoomCustomer> roomCustomerRepository;
 
     public HotelService(Repository<Room> roomRepository, Repository<Employee> employeeRepository, Repository<Customer> customerRepository, Repository<RoomCustomer> roomCustomerRepository) {
         this.roomRepository = roomRepository;
         this.employeeRepository = employeeRepository;
         this.customerRepository = customerRepository;
+      
+    private final Repository<Department> departmentRepository;
+    private final Repository<RoomCustomer> roomCustomerRepository;
+
+    public HotelService(Repository<Room> roomRepository, Repository<Employee> employeeRepository, Repository<Customer> customerRepository, Repository<Department>departmentRepository, Repository<RoomCustomer>roomCustomerRepository) {
+        this.roomRepository = roomRepository;
+        this.employeeRepository = employeeRepository;
+        this.customerRepository = customerRepository;
+        this.departmentRepository = departmentRepository;
         this.roomCustomerRepository = roomCustomerRepository;
     }
 
@@ -102,4 +112,16 @@ public class HotelService{
     }
     //--------------------------------------------------
 
+
+    //-----------------DEPARTMENT SECTION------------------
+    public void addDepartment(Department department) {departmentRepository.create(department);}
+    public void deleteDepartment(Department department) {departmentRepository.delete(department.getId());}
+    public void editDepartment(Department department) {departmentRepository.update(department);}
+    //--------------------------------------------------
+
+    //-----------------ROOMCUSTOMER SECTION------------------
+    public void addRoomCustomer(RoomCustomer roomCustomer) {roomCustomerRepository.create(roomCustomer);}
+    public void deleteRoomCustomer(RoomCustomer roomCustomer) {roomCustomerRepository.delete(roomCustomer.getId());}
+    public void updateRoomCustomer(RoomCustomer roomCustomer) {roomCustomerRepository.update(roomCustomer);}
+    //--------------------------------------------------
 }

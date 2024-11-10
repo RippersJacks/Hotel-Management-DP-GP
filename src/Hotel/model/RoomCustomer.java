@@ -4,6 +4,7 @@ import java.util.Date;
 
 public class RoomCustomer implements HasId {
     private Integer id;
+    private int id;
     private int roomId;
     private int customerId;
     private Date date;
@@ -15,6 +16,8 @@ public class RoomCustomer implements HasId {
         this.date = date;
     }
 
+
+    @Override
     public Integer getId() {
         return id;
     }
