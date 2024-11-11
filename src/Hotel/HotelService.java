@@ -97,6 +97,20 @@ public class HotelService{
     List<Customer>getAllCustomers(){
         return customerRepository.getAll();
     }
+
+    List<Room> getAvailableRooms(){
+        List<Room> roomList = roomRepository.getAll();
+        List<Room> availableRoomList = new ArrayList<>();
+
+        Receptionist receptionistFunction = new Receptionist(0,"",0,"",null);
+
+        for (Room room : roomList) {
+            if (receptionistFunction.checkRoom(room))
+                availableRoomList.add(room);
+        }
+
+        return availableRoomList;
+    }
     //--------------------------------------------------
 
 

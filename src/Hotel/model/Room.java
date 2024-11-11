@@ -65,6 +65,18 @@ public class Room implements HasId {
     public void setAvailability(String availability) {
         this.availability = availability;
     }
+
+    @Override
+    public String toString() {
+        return "Room{" +
+                "id=" + id +
+                ", floor=" + floor +
+                ", number=" + number +
+                ", type='" + type + '\'' +
+                ", pricePerNight=" + pricePerNight +
+                ", availability='" + availability + '\'' +
+                '}';
+    }
 }
 
 
