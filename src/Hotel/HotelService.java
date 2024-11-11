@@ -114,7 +114,6 @@ public class HotelService{
     //--------------------------------------------------
 
 
-
     //-----------------MANAGER SECTION------------------
     public void createEmployee(String type, String name, int salary, String password){
         //id of customers autoincrements (searches for maximum id and then +1)
@@ -160,6 +159,37 @@ public class HotelService{
 
     public void updateEmployee(Employee employee){
         employeeRepository.update(employee);
+    }
+
+
+    public String getEmployeeType(int id){
+        for (Employee employee : employeeRepository.getAll()){
+            if (employee.getId() == id){
+                if (employee instanceof Receptionist) return "Receptionist";
+                else if (employee instanceof Cleaner) return "Cleaner";
+                else if (employee instanceof Manager) return "Mananger";
+            }
+        }
+        return null;
+    }
+
+    public String getManagersManagedDepartmentType(int id){
+        Manager manager = null;
+        for (Employee employee : employeeRepository.getAll()){
+            if (employee.getId() == id){
+                manager = (Manager)employee;
+            }
+        }
+        for (Department department : departmentRepository.getAll()){
+            if (manager.getManagedDepartmentID().equals(department.getId())){
+                switch (department.getName()){
+                    case "Receptionist Department" : return "Receptionist";
+                    case "Cleaning Department" : return "Cleaner";
+                    case "Manager Department" : return "Manager";
+                }
+            }
+        }
+        return null;
     }
     //--------------------------------------------------
 

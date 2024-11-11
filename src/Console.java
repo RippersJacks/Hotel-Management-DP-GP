@@ -22,9 +22,15 @@ public class Console {
 
     public void run() {
         HotelRegistrationSystem system = new HotelRegistrationSystem(createInMemoryEmployeeRepository());
-        String role = system.login();
-
         Scanner sc = new Scanner(System.in);
+        System.out.println("Please enter your id: ");
+        int id = sc.nextInt();
+        sc.nextLine();
+        System.out.println("Please enter your password: ");
+        String password = sc.nextLine();
+
+        String role = system.login(id, password);
+
         while (true) {
             if (role.equalsIgnoreCase("Receptionist")) {
                 System.out.println("You are a " + role);
@@ -81,7 +87,7 @@ public class Console {
                         hotelController.deleteEmployee();
                         break;
                     case 3:
-                        hotelController.updateEmployee("Receptionist"); //TODO Aici nu trebuie sa fie parametru asta
+                        hotelController.updateEmployee(id);
                         break;
                 }
             } else if (role.equalsIgnoreCase("Cleaner")) {
@@ -180,9 +186,14 @@ public class Console {
         for (Employee employee : employees) {
             if (employee instanceof Receptionist) {cleaners.add(employee);}
         }
-        departmentRepo.create(new Department(9215, "Cleaning Department", receptionists));
+        departmentRepo.create(new Department(9216, "Receptionist Department", receptionists));
 
-        departmentRepo.getAll().forEach(System.out::println);
+        ArrayList<Employee> managers = new ArrayList<>();
+        for (Employee employee : employees) {
+            if (employee instanceof Receptionist) {managers.add(employee);}
+        }
+        departmentRepo.create(new Department(9217, "Manager Department", managers));
+
         return departmentRepo;
     }
 
