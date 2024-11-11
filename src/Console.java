@@ -20,83 +20,96 @@ public class Console {
         this.hotelController = hotelController;
     }
 
-    public void run(){
+    public void run() {
         HotelRegistrationSystem system = new HotelRegistrationSystem(createInMemoryEmployeeRepository());
         String role = system.login();
 
         Scanner sc = new Scanner(System.in);
+        while (true) {
+            if (role.equalsIgnoreCase("Receptionist")) {
+                System.out.println("You are a " + role);
+                System.out.println("""
+                        Choose what you want to do
+                        1. Add a new client
+                        2. Remove a client
+                        3. Update a client
+                        4. See all customers
+                        0. Stop
+                        """);
+                System.out.println("Enter your choice: ");
+                int choice = sc.nextInt();
+                sc.nextLine();
 
-        if (role.equalsIgnoreCase("Receptionist")){
-            System.out.println("You are a " + role);
-            System.out.println("""
-                    Choose what you want to do
-                    1. Add a new client
-                    2. Remove a client
-                    3. Update a client
-                    """);
-            System.out.println("Enter your choice: ");
-            int choice = sc.nextInt();
-            switch(choice){
-                case 1:
-                    hotelController.createClientValidate();
-                    break;
-                case 2:
-                    hotelController.deleteClientValidate();
-                    break;
-                case 3:
-                    hotelController.updateClientValidate();
-                    break;
+                if (choice == 0) break;
+                switch (choice) {
+                    case 1:
+                        hotelController.createClientValidate();
+                        break;
+                    case 2:
+                        hotelController.deleteClientValidate();
+                        break;
+                    case 3:
+                        hotelController.updateClientValidate();
+                        break;
+                    case 4:
+                        hotelController.showAllCustomers();
+                        break;
 
+                }
+            } else if (role.equalsIgnoreCase("Manager")) {
+                System.out.println("You are a " + role);
+                System.out.println("""
+                        Choose what you want to do
+                        1. Add a new employee
+                        2. Remove an employee
+                        3. Update an employee
+                        0. Stop
+                        """);
+                System.out.println("Enter your choice: ");
+                int choice = sc.nextInt();
+                sc.nextLine();
+                if (choice == 0) break;
+                switch (choice) {
+                    case 1:
+                        hotelController.createEmployee();
+                        break;
+                    case 2:
+                        hotelController.deleteEmployee();
+                        break;
+                    case 3:
+                        hotelController.updateEmployee("Receptionist"); //TODO Aici nu trebuie sa fie parametru asta
+                        break;
+                }
+            } else if (role.equalsIgnoreCase("Cleaner")) {
+                System.out.println("You are a " + role);
+                System.out.println("""
+                        Choose what you want to do
+                        1. See all the dirty rooms
+                        2. Clean a room
+                        0. Stop
+                        """);
+                System.out.println("Enter your choice: ");
+                int choice = sc.nextInt();
+                sc.nextLine();
+
+                if (choice == 0) break;
+                switch (choice) {
+                    case 1:
+                        hotelController.checkDirtyRoomsValidate();
+                        break;
+                    case 2:
+                        System.out.println("Write the id of the cleaned room:");
+                        int roomId = sc.nextInt();
+                        sc.nextLine();
+                        hotelController.cleanRoomValidate(roomId);
+                        break;
+                }
+            } else {
+                System.out.println("The information you entered can't be found in the database.");
+                break;
             }
-        }
-        else if (role.equalsIgnoreCase("Manager")){
-            System.out.println("You are a " + role);
-            System.out.println("""
-                    Choose what you want to do
-                    1. Add a new employee
-                    2. Remove an employee
-                    3. Update an employee
-                    """);
-            System.out.println("Enter your choice: ");
-            int choice = sc.nextInt();
-            switch(choice){
-                case 1:
-                    hotelController.createEmployee();
-                    break;
-                case 2:
-                    hotelController.deleteEmployee();
-                    break;
-                case 3:
-                    hotelController.updateEmployee("Receptionist"); //TODO Aici nu trebuie sa fie parametru asta
-                    break;
-            }
-        }
-        else if (role.equalsIgnoreCase("Cleaner")){
-            System.out.println("You are a " + role);
-            System.out.println("""
-                    Choose what you want to do
-                    1. See all the dirty rooms
-                    2. Clean a room
-                    """);
-            System.out.println("Enter your choice: ");
-            int choice = sc.nextInt();
 
-            switch (choice){
-                case 1 :
-                    hotelController.checkDirtyRoomsValidate();
-                    break;
-                case 2 :
-                    System.out.println("Write the id of the cleaned room:");
-                    int roomId = sc.nextInt();
-                    sc.nextLine();
-                    hotelController.cleanRoomValidate(roomId);
-                    break;
-            }
         }
-        else {
-            System.out.println("The information you entered can't be found in the database.");
-        }
-
     }
 
 
@@ -150,7 +163,7 @@ public class Console {
     private static Repository<Department> createInMemoryDepartmentRepository() {
         Repository<Department> departmentRepo = new InMemoryRepository<>();
 
-        List<Employee> employees = new ArrayList<>();
+        List<Employee> employees;
         employees = createInMemoryEmployeeRepository().getAll();
 
         ArrayList<Employee> cleaners = new ArrayList<>();

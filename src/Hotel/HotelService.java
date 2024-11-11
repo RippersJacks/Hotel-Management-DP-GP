@@ -93,6 +93,10 @@ public class HotelService{
     }
 
     void updateClient(Customer client) {customerRepository.update(client);}
+
+    List<Customer>getAllCustomers(){
+        return customerRepository.getAll();
+    }
     //--------------------------------------------------
 
 
