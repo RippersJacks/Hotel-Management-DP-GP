@@ -34,6 +34,7 @@ public class Console {
                         2. Remove a client
                         3. Update a client
                         4. See all customers
+                        5. See all available rooms
                         0. Stop
                         """);
                 System.out.println("Enter your choice: ");
@@ -53,6 +54,9 @@ public class Console {
                         break;
                     case 4:
                         hotelController.showAllCustomers();
+                        break;
+                    case 5:
+                        hotelController.showAllAvailableRooms();
                         break;
 
                 }
@@ -194,6 +198,7 @@ public class Console {
         roomRepo.create(new Room(50, 2, 210, "Twin Room", 80, "Unavailable"));
         roomRepo.create(new Room(51, 2, 211, "Queen Room", 200, "Dirty"));
         roomRepo.create(new Room(58, 4, 440, "Suite", 450, "Unavailable"));
+        roomRepo.create(new Room(60,2,212,"Single Room",60,"Available"));
         return roomRepo;
     }
 

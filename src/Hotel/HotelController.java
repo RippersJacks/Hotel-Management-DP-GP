@@ -66,9 +66,18 @@ public class HotelController {
     }
 
     public void showAllCustomers(){
+        System.out.println("\nCurrent list of customers:");
         for (Customer customer:hotelService.getAllCustomers()){
             System.out.println(customer.toString());
         }
+        System.out.println();
+    }
+
+    public void showAllAvailableRooms(){
+        System.out.println("\nCurrently available rooms:");
+        for (Room room : hotelService.getAvailableRooms())
+            System.out.println(room.toString());
+        System.out.println();
     }
     //-------------------------------------------
 
