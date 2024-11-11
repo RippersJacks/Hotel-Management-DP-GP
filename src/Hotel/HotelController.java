@@ -56,12 +56,19 @@ public class HotelController {
         Scanner sc = new Scanner(System.in);
         System.out.println("Enter customer id to be updated: ");
         Integer id = sc.nextInt();
+        sc.nextLine();
 
         System.out.println("New customer name: ");
         String name = sc.nextLine();
 
         Customer customer = new Customer(id, name);
         hotelService.updateClient(customer);
+    }
+
+    public void showAllCustomers(){
+        for (Customer customer:hotelService.getAllCustomers()){
+            System.out.println(customer.toString());
+        }
     }
     //-------------------------------------------
 
@@ -98,10 +105,12 @@ public class HotelController {
 
         System.out.println("Enter employee id to be updated: ");
         Integer id = sc.nextInt();
+        sc.nextLine();
         System.out.println("Enter employee name: ");
         String newName = sc.nextLine();
         System.out.println("Enter employee salary: ");
         int newSalary = sc.nextInt();
+        sc.nextLine();
         System.out.println("Enter employee password: ");
         String newPassword = sc.nextLine();
 

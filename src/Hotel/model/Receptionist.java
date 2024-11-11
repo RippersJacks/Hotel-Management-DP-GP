@@ -20,6 +20,6 @@ public class Receptionist extends Employee implements CheckRoom{
 
     @Override   //Interface
     public boolean checkRoom(Room room) {  //only available rooms will have return value True
-        return room.getAvailability().equals("Avaible");
+        return room.getAvailability().equals("Available");
     }
 }
