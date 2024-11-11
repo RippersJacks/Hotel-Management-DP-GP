@@ -16,14 +16,9 @@ public class HotelRegistrationSystem {
         this.employeeRepo = employeeRepo;
     }
 
-    public String login() {
+    public String login(int id, String password) {
 
-        Scanner sc = new Scanner(System.in);
-        System.out.println("Please enter your id: ");
-        int id = sc.nextInt();
-        sc.nextLine();
-        System.out.println("Please enter your password: ");
-        String password = sc.nextLine();
+
 
         for (Employee employee: employeeRepo.getAll())
             if (employee.getId() == id && employee.getPassword().equals(password)) //user found

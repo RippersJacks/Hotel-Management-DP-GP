@@ -1,6 +1,7 @@
 package Hotel;
 
 import Hotel.model.*;
+import Hotel.repository.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -107,46 +108,49 @@ public class HotelController {
         hotelService.deleteEmployee(id);
     }
 
-    //TODO Type-ul este tipul de employee care va fi updatat,
-    // dar type-ul trebuie cautat in functie de Id-u primit
-    public void updateEmployee(String type){
-        Scanner sc = new Scanner(System.in);
 
+    public void updateEmployee(int managerId) {
+        Scanner sc = new Scanner(System.in);
         System.out.println("Enter employee id to be updated: ");
         Integer id = sc.nextInt();
         sc.nextLine();
-        System.out.println("Enter employee name: ");
-        String newName = sc.nextLine();
-        System.out.println("Enter employee salary: ");
-        int newSalary = sc.nextInt();
-        sc.nextLine();
-        System.out.println("Enter employee password: ");
-        String newPassword = sc.nextLine();
 
-        if (type.equalsIgnoreCase("Manager")){
-            System.out.println("Enter managed department Id:");
-            Integer newDepartmentId = sc.nextInt();
-            Employee employee = new Manager(id,newName, newSalary, newPassword, newDepartmentId);
-            hotelService.updateEmployee(employee);
-        }
-        else if(type.equalsIgnoreCase("Cleaner")){
-            System.out.println("Enter floor number:");
-            int newFloorNumber = sc.nextInt();
-            Employee employee = new Manager(id,newName, newSalary, newPassword, newFloorNumber);
-            hotelService.updateEmployee(employee);
-        }
-        else if (type.equalsIgnoreCase("Receptionist")) {
-            ArrayList<String> newLanguages = new ArrayList<>();
-            String language = " ";
-            while (!language.equalsIgnoreCase("stop")){         //when the user types "stop" the language adding stops
-                System.out.println("Enter a language: ");
-                language = sc.nextLine();
-                newLanguages.add(language);
+        String employeeType = hotelService.getEmployeeType(id);
+        System.out.println("mere");
+        String managerType = hotelService.getManagersManagedDepartmentType(managerId);
+
+        if (employeeType.equals(managerType)) {
+            System.out.println("Enter employee name: ");
+            String newName = sc.nextLine();
+            System.out.println("Enter employee salary: ");
+            int newSalary = sc.nextInt();
+            sc.nextLine();
+            System.out.println("Enter employee password: ");
+            String newPassword = sc.nextLine();
+
+            if (employeeType.equalsIgnoreCase("Manager")) {
+                System.out.println("Enter managed department Id:");
+                Integer newDepartmentId = sc.nextInt();
+                Employee employee = new Manager(id, newName, newSalary, newPassword, newDepartmentId);
+                hotelService.updateEmployee(employee);
+            } else if (employeeType.equalsIgnoreCase("Cleaner")) {
+                System.out.println("Enter floor number:");
+                int newFloorNumber = sc.nextInt();
+                Employee employee = new Manager(id, newName, newSalary, newPassword, newFloorNumber);
+                hotelService.updateEmployee(employee);
+            } else if (employeeType.equalsIgnoreCase("Receptionist")) {
+                ArrayList<String> newLanguages = new ArrayList<>();
+                String language = " ";
+                while (!language.equalsIgnoreCase("stop")) {         //when the user types "stop" the language adding stops
+                    System.out.println("Enter a language: ");
+                    language = sc.nextLine();
+                    newLanguages.add(language);
+                }
+                Employee employee = new Receptionist(id, newName, newSalary, newPassword, newLanguages);
+                hotelService.updateEmployee(employee);
             }
-            Employee employee = new Receptionist(id, newName, newSalary, newPassword, newLanguages);
-            hotelService.updateEmployee(employee);
-        }
 
+        }else System.out.println("Wrong department");
     }
 
     //-------------------------------------------
