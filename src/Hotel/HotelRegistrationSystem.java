@@ -35,9 +35,6 @@ public class HotelRegistrationSystem {
      * @return      the type of the Employee, as a String object
      */
     public String login(int id, String password) {
-
-
-
         for (Employee employee: employeeRepo.getAll())
             if (employee.getId() == id && employee.getPassword().equals(password)) //user found
             {

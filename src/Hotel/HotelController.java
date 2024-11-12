@@ -1,8 +1,6 @@
 package Hotel;
 
 import Hotel.model.*;
-import Hotel.repository.Repository;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -122,7 +120,7 @@ public class HotelController {
      * <p>
      * A manager may only use this function to create employees of his managed department's type. (ex. Receptionist)
      */
-    public void createEmployee(){
+    public void createEmployee(int managerId){
         Scanner sc = new Scanner(System.in);
         System.out.println("Enter employee name: ");
         String name = sc.nextLine();
@@ -131,8 +129,7 @@ public class HotelController {
         sc.nextLine();
         System.out.println("Enter employee password: ");
         String password = sc.nextLine();
-        System.out.println("Enter employee role: ");
-        String role = sc.nextLine();
+        String role = hotelService.getManagersManagedDepartmentType(managerId);
         hotelService.createEmployee(role, name, salary, password);
     }
 
@@ -141,12 +138,15 @@ public class HotelController {
      * <p>
      * A manager may only use this function to delete employees of his managed department's type. (ex. Receptionist)
      */
-    public void deleteEmployee(){
+    public void deleteEmployee(int managerId){
         Scanner sc = new Scanner(System.in);
-        System.out.println("Enter customer id to be deleted: ");
-        Integer id = sc.nextInt();
-
-        hotelService.deleteEmployee(id);
+        System.out.println("Enter employee id to be deleted: ");
+        int id = sc.nextInt();
+        if (hotelService.getEmployeeType(id).equals(hotelService.getManagersManagedDepartmentType(managerId))) {
+            hotelService.deleteEmployee(id);
+            System.out.println("Employee successfully deleted");
+        }
+        else System.out.println("The given id is not valid for your department");
     }
 
     /**
@@ -162,7 +162,6 @@ public class HotelController {
         sc.nextLine();
 
         String employeeType = hotelService.getEmployeeType(id);
-        System.out.println("mere");
         String managerType = hotelService.getManagersManagedDepartmentType(managerId);
 
         if (employeeType.equals(managerType)) {
@@ -187,6 +186,7 @@ public class HotelController {
             } else if (employeeType.equalsIgnoreCase("Receptionist")) {
                 ArrayList<String> newLanguages = new ArrayList<>();
                 String language = " ";
+
                 while (!language.equalsIgnoreCase("stop")) {         //when the user types "stop" the language adding stops
                     System.out.println("Enter a language: ");
                     language = sc.nextLine();
@@ -197,6 +197,55 @@ public class HotelController {
             }
 
         }else System.out.println("Wrong department");
+    }
+
+    /**
+     * The function checks if a specific manager, the manager of all the departments is
+     *
+     * @param id is the id of a manager
+     * @return true or false
+     */
+    private boolean managerOverDepartments(int id){
+        return hotelService.getManagersManagedDepartmentType(id).equals("Department");
+    }
+
+
+    public void createDepartment(int id){
+        if (managerOverDepartments(id)){
+            Scanner sc = new Scanner(System.in);
+            System.out.println("Enter a new department name: ");
+            String departmentName = sc.nextLine();
+            List<Employee> employees = new ArrayList<>();
+            hotelService.createDepartment(departmentName, employees);
+
+        }else System.out.println("You are not authorised to do this");
+    }
+
+
+    public void deleteDepartment(int id){
+        if (managerOverDepartments(id)){
+            Scanner sc = new Scanner(System.in);
+            System.out.println("Enter the id of the department you want to delete: ");
+            hotelService.deleteDepartment(sc.nextInt());
+
+        }else System.out.println("You are not authorised to do this");
+    }
+
+
+    public void updateDepartament(int id){
+        if (managerOverDepartments(id)){
+            Scanner sc = new Scanner(System.in);
+            System.out.println("Enter a department id to be updated: ");
+            int departmentId = sc.nextInt();
+            sc.nextLine();
+            System.out.println("Enter new department name: ");
+            String departmentName = sc.nextLine();
+            List<Employee> emptyEmployeeList = new ArrayList<>();
+
+            Department updatedDepartment =new Department(departmentId, departmentName, emptyEmployeeList);
+            hotelService.updateDepartment(updatedDepartment);
+
+        }else System.out.println("You are not authorised to do this");
     }
 
     //-------------------------------------------

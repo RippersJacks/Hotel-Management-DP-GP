@@ -1,11 +1,12 @@
 package Hotel.model;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Department implements HasId {
 
     private Integer id;
     private String name;
-    private ArrayList<Employee> employees;
+    private List<Employee> employees;
 
     /**
      * Class: Department; contains an ID, a name and a list of all employees that belong to the department
@@ -13,7 +14,7 @@ public class Department implements HasId {
      * @param name The name of the department.
      * @param employees The list with all employees of the department.
      */
-    public Department(Integer id, String name, ArrayList<Employee> employees) {
+    public Department(Integer id, String name, List<Employee> employees) {
         this.id = id;
         this.name = name;
         this.employees = employees;
@@ -40,7 +41,7 @@ public class Department implements HasId {
      * Returns all employees of the department.
      * @return arraylist of employees of the department
      */
-    public ArrayList<Employee> getEmployees() {
+    public List<Employee> getEmployees() {
         return employees;
     }
 
