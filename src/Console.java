@@ -66,7 +66,6 @@ public class Console {
                     case 5:
                         hotelController.showAllAvailableRooms();
                         break;
-
                 }
             } else if (role.equalsIgnoreCase("Manager")) {
                 System.out.println("You are a " + role);
@@ -137,7 +136,7 @@ public class Console {
     }
 
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
         Repository<Employee> employeeRepository = createInMemoryEmployeeRepository();
         Repository<Department> departmentRepository = createInMemoryDepartmentRepository();
         Repository<Room> roomRepository = createInMemoryRoomRepository();

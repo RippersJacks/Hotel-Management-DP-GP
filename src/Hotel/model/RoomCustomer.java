@@ -23,6 +23,17 @@ public class RoomCustomer implements HasId {
         return id;
     }
 
+    @Override
+    public String toString() {
+        return "RoomCustomer{" +
+                "id=" + id +
+                ", roomId=" + roomId +
+                ", customerId=" + customerId +
+                ", fromDate=" + fromDate +
+                ", untilDate=" + untilDate +
+                '}';
+    }
+
     public void setId(int id) {
         this.id = id;
     }

@@ -53,13 +53,30 @@ public class HotelController {
 
     /**
      * Creates a customer in the database with an automatically chosen ID and a name given trough input.
+     * It also saves a roomCustomer in the database.
+     * Everything happens after it checks, if the clients desired room type exists and is available.
      */
     public void createClientValidate(){
         Scanner sc = new Scanner(System.in);
         System.out.println("Enter customer name: ");
         String name = sc.nextLine();
+        System.out.println("Enter desired room type: ");
+        String roomType = sc.nextLine();
+        System.out.println("Enter check-in date: ");
+        String checkInDate = sc.nextLine();
+        System.out.println("Enter check-out date: ");
+        String checkOutDate = sc.nextLine();
 
-        hotelService.createClient(name);
+        for (Room room: hotelService.getAvailableRooms()){
+            if (room.getType().equals(roomType)){
+                int roomId = room.getId();
+                room.setAvailability("Unavailable");
+                hotelService.createClient(name, roomId, checkInDate, checkOutDate);
+                break;
+            }
+            System.out.println("No available rooms left of this type");
+        }
+
     }
 
     /**
@@ -68,9 +85,9 @@ public class HotelController {
     public void deleteClientValidate(){
         Scanner sc = new Scanner(System.in);
         System.out.println("Enter customer id to be deleted: ");
-        Integer id = sc.nextInt();
-
+        int id = sc.nextInt();
         hotelService.deleteClient(id);
+        hotelService.deleteRoomCustomer(id);
     }
 
     /**
@@ -249,4 +266,5 @@ public class HotelController {
     }
 
     //-------------------------------------------
+
 }
