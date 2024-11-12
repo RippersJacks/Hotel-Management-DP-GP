@@ -3,6 +3,9 @@ package Hotel;
 import Hotel.model.*;
 import Hotel.repository.Repository;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -89,16 +92,21 @@ public class HotelService{
     /**
      * Adds a new customer to the Customer section of the database.
      * His ID is determined automatically.
+     * It also passes parameters to he createRoomCustomer function to create simultaneosly a roomCustomer*
      * @param name name of the customer to be created
+     * @param roomId the room id that will be used to create the roomCustomer
+     * @param checkInDate also used to create the roomCustomer
+     * @param checkOutDate also used to create the roomCustomer
      */
-    void createClient(String name) {
+    void createClient(String name, int roomId, String checkInDate, String checkOutDate) {
         //id of customers autoincrements (searches for maximum id and then +1)
         Integer id = 0;
         List<Customer> customerList = customerRepository.getAll();
         for (Customer customer : customerList) {if (id < customer.getId()) id = customer.getId();}
         id += 1;
 
-        Customer client = new Customer(id,name);
+        Customer client = new Customer(id, name);
+        this.createRoomCustomer(id, roomId, checkInDate, checkOutDate);
         customerRepository.create(client);
     }
 
@@ -118,7 +126,6 @@ public class HotelService{
                 roomID = roomCustomer.getRoomId();
             }
         }
-
         Room changedRoom = roomRepository.get(roomID);
         changedRoom.setAvailability("Dirty");
         roomRepository.update(changedRoom);
@@ -198,7 +205,7 @@ public class HotelService{
             employeeRepository.create(employee);
         }
         else if (type.equalsIgnoreCase("Manager")){
-            System.out.println("Enter departmentId: ");
+            System.out.println("Enter department id: ");
             int departmentId = sc.nextInt();
             Employee employee = new Cleaner(id, name, salary, password, departmentId);
             employeeRepository.create(employee);
@@ -299,9 +306,41 @@ public class HotelService{
     public void updateDepartment(Department department) {departmentRepository.update(department);}
     //--------------------------------------------------
 
+
     //-----------------ROOMCUSTOMER SECTION------------------
-    public void addRoomCustomer(RoomCustomer roomCustomer) {roomCustomerRepository.create(roomCustomer);}
-    public void deleteRoomCustomer(RoomCustomer roomCustomer) {roomCustomerRepository.delete(roomCustomer.getId());}
+    public void createRoomCustomer(int customerId, int roomId, String checkInDate, String checkOutDate) {
+        Integer id = 0;
+        List<RoomCustomer> roomCustomerList = roomCustomerRepository.getAll();
+        for (RoomCustomer roomCustomer : roomCustomerList) {if (id < roomCustomer.getId()) id = roomCustomer.getId();}
+        id += 1;
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            Date dateFormatCheckInDate = formatter.parse(checkInDate);
+            Date dateFormatCheckOutDate = formatter.parse(checkOutDate);
+            RoomCustomer newRoomCustomer = new RoomCustomer(id, roomId, customerId, dateFormatCheckInDate, dateFormatCheckOutDate);
+            roomCustomerRepository.create(newRoomCustomer);
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+
+        }
+    }
+
+
+    public int searchRoomCustomerByCustomer(int id){
+        int searchedId = -1;
+        for (RoomCustomer roomCustomer : roomCustomerRepository.getAll()){
+            if (roomCustomer.getCustomerId() == id) searchedId = roomCustomer.getId();
+        }
+        return searchedId;
+    }
+
+
+    public void deleteRoomCustomer(int id) {
+        roomCustomerRepository.delete(searchRoomCustomerByCustomer(id));}
+
+
     public void updateRoomCustomer(RoomCustomer roomCustomer) {roomCustomerRepository.update(roomCustomer);}
     //--------------------------------------------------
 }
