@@ -232,9 +232,19 @@ public class HotelService{
     public String getEmployeeType(int id){
         for (Employee employee : employeeRepository.getAll()){
             if (employee.getId() == id){
-                if (employee instanceof Receptionist) return "Receptionist";
-                else if (employee instanceof Cleaner) return "Cleaner";
-                else if (employee instanceof Manager) return "Mananger";
+                switch (employee) {
+                    case Receptionist receptionist -> {
+                        return "Receptionist";
+                    }
+                    case Cleaner cleaner -> {
+                        return "Cleaner";
+                    }
+                    case Manager manager -> {
+                        return "Mananger";
+                    }
+                    default -> {
+                    }
+                }
             }
         }
         return null;
@@ -260,6 +270,7 @@ public class HotelService{
                     case "Receptionist Department" : return "Receptionist";
                     case "Cleaning Department" : return "Cleaner";
                     case "Manager Department" : return "Manager";
+                    case "Structural Department": return "Department";
                 }
             }
         }
@@ -269,9 +280,23 @@ public class HotelService{
 
 
     //-----------------DEPARTMENT SECTION------------------
-    public void addDepartment(Department department) {departmentRepository.create(department);}
-    public void deleteDepartment(Department department) {departmentRepository.delete(department.getId());}
-    public void editDepartment(Department department) {departmentRepository.update(department);}
+    public void createDepartment(String name, List<Employee> employees) {
+        Integer id = 0;
+        List<Department> departmentList = departmentRepository.getAll();
+        for (Department department : departmentList) {if (id < department.getId()) id = department.getId();}
+        id += 1;
+
+        Department newDepartment = new Department(id, name, employees);
+        departmentRepository.create(newDepartment);
+    }
+
+
+    public void deleteDepartment(int id) {
+        departmentRepository.delete(id);
+    }
+
+
+    public void updateDepartment(Department department) {departmentRepository.update(department);}
     //--------------------------------------------------
 
     //-----------------ROOMCUSTOMER SECTION------------------

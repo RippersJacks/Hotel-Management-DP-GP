@@ -4,13 +4,12 @@ import Hotel.HotelService;
 import Hotel.model.*;
 import Hotel.repository.InMemoryRepository;
 import Hotel.repository.Repository;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Scanner;
-import java.util.stream.IntStream;
+
 
 public class Console {
 
@@ -39,9 +38,9 @@ public class Console {
                 System.out.println("You are a " + role);
                 System.out.println("""
                         Choose what you want to do
-                        1. Add a new client
-                        2. Remove a client
-                        3. Update a client
+                        1. Add a new customer
+                        2. Remove a customer
+                        3. Update a customer
                         4. See all customers
                         5. See all available rooms
                         0. Stop
@@ -76,22 +75,34 @@ public class Console {
                         1. Add a new employee
                         2. Remove an employee
                         3. Update an employee
+                        4. Add a new department
+                        5. Update a department
+                        6. Delete a department
                         0. Stop
                         """);
+
                 System.out.println("Enter your choice: ");
                 int choice = sc.nextInt();
                 sc.nextLine();
                 if (choice == 0) break;
                 switch (choice) {
                     case 1:
-                        hotelController.createEmployee();
+                        hotelController.createEmployee(id);
                         break;
                     case 2:
-                        hotelController.deleteEmployee();
+                        hotelController.deleteEmployee(id);
                         break;
                     case 3:
                         hotelController.updateEmployee(id);
                         break;
+                    case 4:
+                        hotelController.createDepartment(id);
+
+                    case 5:
+                        hotelController.updateDepartament(id);
+
+                    case 6:
+                        hotelController.deleteDepartment(id);
                 }
             } else if (role.equalsIgnoreCase("Cleaner")) {
                 System.out.println("You are a " + role);
@@ -193,10 +204,12 @@ public class Console {
 
         ArrayList<Employee> managers = new ArrayList<>();
         for (Employee employee : employees) {
-            if (employee instanceof Receptionist) {managers.add(employee);}
+            if (employee instanceof Manager) {managers.add(employee);}
         }
         departmentRepo.create(new Department(9217, "Manager Department", managers));
 
+        ArrayList<Employee> structuralManagers = new ArrayList<>();
+        departmentRepo.create(new Department(9218,"Structural Department", structuralManagers));
         return departmentRepo;
     }
 
