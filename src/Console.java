@@ -20,6 +20,9 @@ public class Console {
         this.hotelController = hotelController;
     }
 
+    /**
+     * Contains the User Interface of the User when he logs in and when he uses the project's functionality.
+     */
     public void run() {
         HotelRegistrationSystem system = new HotelRegistrationSystem(createInMemoryEmployeeRepository());
         Scanner sc = new Scanner(System.in);

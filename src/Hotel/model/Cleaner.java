@@ -16,7 +16,11 @@ public class Cleaner extends Employee implements CheckRoom {
         this.floor = floor;
     }
 
-
+    /**
+     * Returns true if the room given as a parameter is of availability "Dirty".
+     * @param room object of type Room
+     * @return true or false
+     */
     @Override
     public boolean checkRoom(Room room) {
         return room.getAvailability().equals("Dirty");

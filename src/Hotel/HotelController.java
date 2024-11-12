@@ -10,11 +10,22 @@ import java.util.Scanner;
 public class HotelController {
     private final HotelService hotelService;
 
-    public HotelController(HotelService cleanerService) {
-        this.hotelService = cleanerService;
+    /**
+     * Contains some UI as a layer for the functionality of the project, some input management and little functionality itself.
+     *
+     * @param hotelService an object of type HotelService which contains the functions with the functionality of the project
+     */
+    public HotelController(HotelService hotelService) {
+        this.hotelService = hotelService;
     }
 
     //-------------CLEANER SECTION--------------
+
+    /**
+     * Shows all rooms on the screen with availability "Dirty".
+     * <p>
+     * Format: ID (number of the room, floor of the room)
+     */
     public void checkDirtyRoomsValidate(){
         //get the list of all dirty rooms
         List<Room> roomList;
@@ -23,20 +34,28 @@ public class HotelController {
         //show all dirty rooms on the screen
         System.out.println("Dirty rooms: ");
         for (Room room: roomList)
-            System.out.println(room.getId() + "(nr. " + room.getNumber() + ", floor " + room.getFloor() + ")");
+            System.out.println(room.getId() + " (nr. " + room.getNumber() + ", floor " + room.getFloor() + ")");
     }
 
+    /**
+     * Checks if the room with given ID parameter exists, and changes its availability to "Available" if it was "Dirty" before.
+     * @param roomID ID of the room to be cleaned.
+     */
     public void cleanRoomValidate(int roomID){
         //the cleanRoom function cleans the room and also returns true if this room has been found; else false
         boolean roomExists = hotelService.cleanRoom(roomID);
 
         if (roomExists) System.out.println("Room " + roomID + " cleaned");
-            else System.out.println("Room " + roomID + " not found");
+            else System.out.println("Room " + roomID + " uncleanable or doesnt exist");
     }
     //-------------------------------------------
 
 
     //-----------RECEPTIONIST SECTION------------
+
+    /**
+     * Creates a customer in the database with an automatically chosen ID and a name given trough input.
+     */
     public void createClientValidate(){
         Scanner sc = new Scanner(System.in);
         System.out.println("Enter customer name: ");
@@ -45,6 +64,9 @@ public class HotelController {
         hotelService.createClient(name);
     }
 
+    /**
+     * Deletes a customer from the database; which customer is to be deleted, is decided by giving his ID as input
+     */
     public void deleteClientValidate(){
         Scanner sc = new Scanner(System.in);
         System.out.println("Enter customer id to be deleted: ");
@@ -53,6 +75,9 @@ public class HotelController {
         hotelService.deleteClient(id);
     }
 
+    /**
+     * Alters a customers data; the ID of the customer to be changed is given (as input) and a new name will be given (as input).
+     */
     public void updateClientValidate(){
         Scanner sc = new Scanner(System.in);
         System.out.println("Enter customer id to be updated: ");
@@ -66,6 +91,9 @@ public class HotelController {
         hotelService.updateClient(customer);
     }
 
+    /**
+     * Shows all current customers of the hotel on the screen.
+     */
     public void showAllCustomers(){
         System.out.println("\nCurrent list of customers:");
         for (Customer customer:hotelService.getAllCustomers()){
@@ -74,6 +102,9 @@ public class HotelController {
         System.out.println();
     }
 
+    /**
+     * Shows all currently avaible rooms on the screen.
+     */
     public void showAllAvailableRooms(){
         System.out.println("\nCurrently available rooms:");
         for (Room room : hotelService.getAvailableRooms())
@@ -85,6 +116,12 @@ public class HotelController {
 
 
     //-------------MANAGER SECTION---------------
+
+    /**
+     * Creates a new employee, receiving the data as input; ID is decided automatically.
+     * <p>
+     * A manager may only use this function to create employees of his managed department's type. (ex. Receptionist)
+     */
     public void createEmployee(){
         Scanner sc = new Scanner(System.in);
         System.out.println("Enter employee name: ");
@@ -99,7 +136,11 @@ public class HotelController {
         hotelService.createEmployee(role, name, salary, password);
     }
 
-
+    /**
+     * Deletes an employee.
+     * <p>
+     * A manager may only use this function to delete employees of his managed department's type. (ex. Receptionist)
+     */
     public void deleteEmployee(){
         Scanner sc = new Scanner(System.in);
         System.out.println("Enter customer id to be deleted: ");
@@ -108,7 +149,12 @@ public class HotelController {
         hotelService.deleteEmployee(id);
     }
 
-
+    /**
+     * Updates employee, receiving the data as input; ID is also given as input.
+     * <p>
+     * A manager may only use this function to create employees of his managed department's type. (ex. Receptionist)
+     * @param managerId ID of the manager who wants to use this function
+     */
     public void updateEmployee(int managerId) {
         Scanner sc = new Scanner(System.in);
         System.out.println("Enter employee id to be updated: ");

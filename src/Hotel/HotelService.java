@@ -14,6 +14,14 @@ public class HotelService{
     private final Repository<Department> departmentRepository;
     private final Repository<RoomCustomer> roomCustomerRepository;
 
+    /**
+     * Contains the functionality of the project and works with the repositories.
+     * @param roomRepository repository with objects of type Room
+     * @param employeeRepository repository with objects of type Employee
+     * @param customerRepository repository with objects of type Customer
+     * @param departmentRepository repository with objects of type Department
+     * @param roomCustomerRepository repository with objects of type RoomCustomer (crossing table for Room & Customer)
+     */
     public HotelService(Repository<Room> roomRepository, Repository<Employee> employeeRepository, Repository<Customer> customerRepository, Repository<Department>departmentRepository, Repository<RoomCustomer>roomCustomerRepository) {
         this.roomRepository = roomRepository;
         this.employeeRepository = employeeRepository;
@@ -24,11 +32,16 @@ public class HotelService{
 
 
     //---------------CLEANER SECTION---------------
+
+    /**
+     * Returns a list of all rooms that are of availability Dirty in the database.
+     * @return list with objects of type Room, with availability Dirty
+     */
     public List<Room> checkDirtyRooms(){
         List<Room> roomList = roomRepository.getAll();
         List<Room> dirtyRoomList = new ArrayList<>();
 
-        Cleaner cleanerFunction = new Cleaner(0,"",0,"",0); //just for the use of the checkRoom function
+        Cleaner cleanerFunction = new Cleaner(0,"",0,"",0); //just for the use of the checkRoom function which is located in the Cleaner class
 
         for (Room room : roomList) {
             if (cleanerFunction.checkRoom(room))
@@ -37,6 +50,17 @@ public class HotelService{
         return dirtyRoomList;
     }
 
+    /**
+     * Uses a given ID parameter to find a room and change its availability from "Dirty" to "Available".
+     * <p>
+     * If the given room has been found and can be cleaned, true is returned.
+     * If it doesnt exist, or exists but is of availability Available or Unavailable, false is returned.
+     * <p>
+     * Availability of given room must be "Dirty" in order for it to be cleaned.
+     *
+     * @param roomID Integer object representing the ID of the room to be cleaned
+     * @return true or false
+     */
     public boolean cleanRoom(Integer roomID){  //TO-DO: update repo with new value
         List<Room> roomList = roomRepository.getAll();
         Room targetRoom = null;
@@ -44,23 +68,29 @@ public class HotelService{
         for (Room room : roomList) {
             if (room.getId().equals(roomID))
             {
-                room.setAvailability("Available");
-                targetRoom = room;
-                break;
+                if (room.getAvailability().equals("Dirty"))
+                {
+                    room.setAvailability("Available");
+                    roomRepository.update(room);
+                    return true;
+                }
+                else
+                    return false;
             }
         }
-        if (targetRoom != null)
-        {
-            roomRepository.update(targetRoom);
-            return true;
-        }
-        else return false;
+        return false;
     }
     //--------------------------------------------------
 
 
 
     //---------------RECEPTIONIST SECTION---------------
+
+    /**
+     * Adds a new customer to the Customer section of the database.
+     * His ID is determined automatically.
+     * @param name name of the customer to be created
+     */
     void createClient(String name) {
         //id of customers autoincrements (searches for maximum id and then +1)
         Integer id = 0;
@@ -72,6 +102,10 @@ public class HotelService{
         customerRepository.create(client);
     }
 
+    /**
+     * Deletes a customer from the database.
+     * @param clientID id of the customer to be deleted
+     */
     void deleteClient(Integer clientID) {
 
         //Search for the room in which the customer stayed in order to change its availability; used crossing table for this
@@ -92,12 +126,24 @@ public class HotelService{
         customerRepository.delete(clientID);
     }
 
+    /**
+     * Updates a customer in the customer database.
+     * @param client object of type Customer, a.k.a. the customer to be updated
+     */
     void updateClient(Customer client) {customerRepository.update(client);}
 
+    /**
+     * Returns a list containing all customers.
+     * @return list of customers
+     */
     List<Customer>getAllCustomers(){
         return customerRepository.getAll();
     }
 
+    /**
+     * Returns a list containing all rooms of availability "Available".
+     * @return list of rooms
+     */
     List<Room> getAvailableRooms(){
         List<Room> roomList = roomRepository.getAll();
         List<Room> availableRoomList = new ArrayList<>();
@@ -115,6 +161,14 @@ public class HotelService{
 
 
     //-----------------MANAGER SECTION------------------
+
+    /**
+     * Creates a new employee in the database. This includes giving the type, name, salary and password as input.
+     * @param type type (role) of the employee (ex. Receptionist)
+     * @param name name of the employee
+     * @param salary salary of the employee
+     * @param password password of the employee
+     */
     public void createEmployee(String type, String name, int salary, String password){
         //id of customers autoincrements (searches for maximum id and then +1)
         Integer id = 0;
@@ -151,17 +205,30 @@ public class HotelService{
         }
     }
 
-
+    /**
+     * Removes an employee from the database.
+     * @param id ID of the employee to be removed
+     */
     public void deleteEmployee(Integer id){
         employeeRepository.delete(id);
     }
 
 
+    /**
+     * Changes an employees values by receiving new data as a parameter and
+     * replacing the employee object in the database with given data.
+     * @param employee employee object with same ID, new data (salary,password)
+     */
     public void updateEmployee(Employee employee){
         employeeRepository.update(employee);
     }
 
 
+    /**
+     * Returns the type of an employee. (ex. Receptionist)
+     * @param id ID of the employee
+     * @return String object with name of the type ("Receptionist", "Cleaner" or "Manager")
+     */
     public String getEmployeeType(int id){
         for (Employee employee : employeeRepository.getAll()){
             if (employee.getId() == id){
@@ -173,6 +240,13 @@ public class HotelService{
         return null;
     }
 
+    /**
+     * Returns what department type a manager has access to. (The type of employee is returned, ex. Receptionist)
+     * <p>
+     * ex. of use: A manager managing the Receptionist department may only alter info of employees of type Receptionist.
+     * @param id ID of the manager
+     * @return String object in format: "Receptionist", "Cleaner" or "Manager"
+     */
     public String getManagersManagedDepartmentType(int id){
         Manager manager = null;
         for (Employee employee : employeeRepository.getAll()){
