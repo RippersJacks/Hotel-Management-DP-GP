@@ -328,17 +328,18 @@ public class HotelService{
     }
 
 
-    public int searchRoomCustomerByCustomer(int id){
-        int searchedId = -1;
+    public List<Integer> searchRoomCustomerByCustomer(int id){
+        ArrayList<Integer>idsList = new ArrayList<>();
         for (RoomCustomer roomCustomer : roomCustomerRepository.getAll()){
-            if (roomCustomer.getCustomerId() == id) searchedId = roomCustomer.getId();
+            if (roomCustomer.getCustomerId() == id) idsList.add( roomCustomer.getId());
         }
-        return searchedId;
+        return idsList;
     }
 
 
     public void deleteRoomCustomer(int id) {
-        roomCustomerRepository.delete(searchRoomCustomerByCustomer(id));}
+        for (int roomCustomerId : searchRoomCustomerByCustomer(id))
+            roomCustomerRepository.delete(roomCustomerId);}
 
 
     public void updateRoomCustomer(RoomCustomer roomCustomer) {roomCustomerRepository.update(roomCustomer);}
