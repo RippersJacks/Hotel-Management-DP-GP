@@ -43,13 +43,18 @@ public class Console {
                         3. Update a customer
                         4. See all customers
                         5. See all available rooms
-                        0. Stop
+                        7. Stop
+                        0. Logout
                         """);
                 System.out.println("Enter your choice: ");
                 int choice = sc.nextInt();
                 sc.nextLine();
 
-                if (choice == 0) break;
+                if (choice == 0) {
+                    run();
+                    break;
+                }
+                if (choice == 7) break;
                 switch (choice) {
                     case 1:
                         hotelController.createClientValidate();
@@ -77,13 +82,18 @@ public class Console {
                         4. Add a new department
                         5. Update a department
                         6. Delete a department
-                        0. Stop
+                        7. Stop
+                        0. Logout
                         """);
 
                 System.out.println("Enter your choice: ");
                 int choice = sc.nextInt();
                 sc.nextLine();
-                if (choice == 0) break;
+                if (choice == 0) {
+                    run();
+                    break;
+                }
+                if (choice == 7) break;
                 switch (choice) {
                     case 1:
                         hotelController.createEmployee(id);
@@ -109,13 +119,18 @@ public class Console {
                         Choose what you want to do
                         1. See all the dirty rooms
                         2. Clean a room
-                        0. Stop
+                        7. Stop
+                        0. Logout
                         """);
                 System.out.println("Enter your choice: ");
                 int choice = sc.nextInt();
                 sc.nextLine();
 
-                if (choice == 0) break;
+                if (choice == 0) {
+                    run();
+                    break;
+                }
+                if (choice == 7) break;
                 switch (choice) {
                     case 1:
                         hotelController.checkDirtyRoomsValidate();
