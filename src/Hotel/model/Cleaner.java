@@ -25,4 +25,11 @@ public class Cleaner extends Employee implements CheckRoom {
     public boolean checkRoom(Room room) {
         return room.getAvailability().equals("Dirty");
     }
+
+    @Override
+    public String toString() {
+        return "Cleaner{" +
+                "floor=" + floor +
+                '}';
+    }
 }

@@ -5,10 +5,7 @@ import Hotel.repository.Repository;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class HotelService{
     private final Repository<Room> roomRepository;
@@ -16,6 +13,7 @@ public class HotelService{
     private final Repository<Customer> customerRepository;
     private final Repository<Department> departmentRepository;
     private final Repository<RoomCustomer> roomCustomerRepository;
+
 
     /**
      * Contains the functionality of the project and works with the repositories.
@@ -282,6 +280,24 @@ public class HotelService{
             }
         }
         return null;
+    }
+
+    public List<Employee> showAllEmployees(){
+        return employeeRepository.getAll();
+    }
+    public List<Department> showAllDepartments(){
+        return departmentRepository.getAll();
+    }
+
+    /**
+     * Creates a copy of the repository (list of type Employee), sorts it and then returns it.
+     */
+    public List<Employee> sortEmployeesBySalary(){
+        List<Employee> sortedEmployeeList = new ArrayList<>(employeeRepository.getAll());
+        System.out.println("Ajunge");
+
+        Collections.sort(sortedEmployeeList);
+        return sortedEmployeeList;
     }
     //--------------------------------------------------
 
