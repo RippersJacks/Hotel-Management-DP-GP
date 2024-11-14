@@ -15,4 +15,11 @@ public class Manager extends Employee{
     public void setManagedDepartmentID(Integer managedDepartmentID) {
         this.managedDepartmentID = managedDepartmentID;
     }
+
+    @Override
+    public String toString() {
+        return "Manager{" +
+                "managedDepartmentID=" + managedDepartmentID +
+                '}';
+    }
 }

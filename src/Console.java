@@ -82,6 +82,9 @@ public class Console {
                         4. Add a new department
                         5. Update a department
                         6. Delete a department
+                        8. Show all employees
+                        9. Show all departments
+                        10. Show all employees sorted by salary
                         7. Stop
                         0. Logout
                         """);
@@ -106,12 +109,22 @@ public class Console {
                         break;
                     case 4:
                         hotelController.createDepartment(id);
-
+                        break;
                     case 5:
                         hotelController.updateDepartament(id);
-
+                        break;
                     case 6:
                         hotelController.deleteDepartment(id);
+                        break;
+                    case 8:
+                        hotelController.showAllEmployeesOnScreen();
+                        break;
+                    case 9:
+                        hotelController.showAllDepartmentsScreen();
+                        break;
+                    case 10:
+                        hotelController.showEmployeesSortedBySalary();
+                        break;
                 }
             } else if (role.equalsIgnoreCase("Cleaner")) {
                 System.out.println("You are a " + role);
@@ -144,6 +157,7 @@ public class Console {
                 }
             } else {
                 System.out.println("The information you entered can't be found in the database.");
+                run();
                 break;
             }
 

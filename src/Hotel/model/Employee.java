@@ -1,6 +1,6 @@
 package Hotel.model;
 
-public abstract class Employee implements HasId{
+public abstract class Employee implements HasId, Comparable<Employee> {
     private Integer id;
     private String name;
     private int salary;
@@ -44,5 +44,21 @@ public abstract class Employee implements HasId{
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    @Override
+    public String toString() {
+        return "Employee{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", salary=" + salary +
+                ", password='" + password + '\'' +
+                '}';
+    }
+
+
+    @Override
+    public int compareTo(Employee employee) {
+        return Integer.compare(this.getSalary(), employee.getSalary());
     }
 }

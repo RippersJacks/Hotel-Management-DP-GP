@@ -60,4 +60,13 @@ public class Department implements HasId {
     public int countEmployees(){
         return employees.size();
     }
+
+    @Override
+    public String toString() {
+        return "Department{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", employees=" + employees +
+                '}';
+    }
 }

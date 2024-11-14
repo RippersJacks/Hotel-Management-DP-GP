@@ -216,6 +216,28 @@ public class HotelController {
         }else System.out.println("Wrong department");
     }
 
+    public void showAllEmployeesOnScreen(){
+        System.out.println("\nCurrent list of employees:");
+        for (Employee employee : hotelService.showAllEmployees())
+            System.out.println(employee.getId() + " " + employee.getName() + " " + employee.getSalary() + " " + employee.getPassword() + " " + employee.toString());
+    }
+
+    public void showEmployeesSortedBySalary(){
+        System.out.println("\n\nEmployees sorted by salary:");
+        for (Employee employee : hotelService.sortEmployeesBySalary())
+            System.out.println(employee.getId() + " " + employee.getName() + " " + employee.getSalary() + " " + employee.getPassword() + " " + employee.toString());
+
+        System.out.println("\n");
+    }
+
+
+    //-------DEPARTMENT SECTION (still belongs to Manager section; one manager manages the department structure)--------
+    public void showAllDepartmentsScreen(){
+        System.out.println("\nCurrent list of departments:");
+        for (Department department : hotelService.showAllDepartments())
+            System.out.println(department.toString());
+    }
+
     /**
      * The function checks if a specific manager, the manager of all the departments is
      *

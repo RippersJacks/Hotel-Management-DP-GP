@@ -35,4 +35,11 @@ public class Receptionist extends Employee implements CheckRoom{
     public boolean checkRoom(Room room) {  //only available rooms will have return value True
         return room.getAvailability().equals("Available");
     }
+
+    @Override
+    public String toString() {
+        return "Receptionist{" +
+                "languages=" + languages +
+                '}';
+    }
 }
