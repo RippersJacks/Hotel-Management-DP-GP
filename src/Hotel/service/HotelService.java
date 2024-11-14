@@ -1,4 +1,4 @@
-package Hotel;
+package Hotel.service;
 
 import Hotel.model.*;
 import Hotel.repository.Repository;
@@ -96,7 +96,7 @@ public class HotelService{
      * @param checkInDate also used to create the roomCustomer
      * @param checkOutDate also used to create the roomCustomer
      */
-    void createClient(String name, int roomId, String checkInDate, String checkOutDate) {
+    public void createClient(String name, int roomId, String checkInDate, String checkOutDate) {
         //id of customers autoincrements (searches for maximum id and then +1)
         Integer id = 0;
         List<Customer> customerList = customerRepository.getAll();
@@ -112,7 +112,7 @@ public class HotelService{
      * Deletes a customer from the database.
      * @param clientID id of the customer to be deleted
      */
-    void deleteClient(Integer clientID) {
+    public void deleteClient(Integer clientID) {
 
         //Search for the room in which the customer stayed in order to change its availability; used crossing table for this
         List<RoomCustomer> roomCustomerList = roomCustomerRepository.getAll();
@@ -135,13 +135,13 @@ public class HotelService{
      * Updates a customer in the customer database.
      * @param client object of type Customer, a.k.a. the customer to be updated
      */
-    void updateClient(Customer client) {customerRepository.update(client);}
+    public void updateClient(Customer client) {customerRepository.update(client);}
 
     /**
      * Returns a list containing all customers.
      * @return list of customers
      */
-    List<Customer>getAllCustomers(){
+    public List<Customer>getAllCustomers(){
         return customerRepository.getAll();
     }
 
@@ -149,7 +149,7 @@ public class HotelService{
      * Returns a list containing all rooms of availability "Available".
      * @return list of rooms
      */
-    List<Room> getAvailableRooms(){
+    public List<Room> getAvailableRooms(){
         List<Room> roomList = roomRepository.getAll();
         List<Room> availableRoomList = new ArrayList<>();
 
