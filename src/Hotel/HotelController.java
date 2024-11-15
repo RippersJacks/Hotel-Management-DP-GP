@@ -126,6 +126,16 @@ public class HotelController {
             System.out.println(room.toString());
         System.out.println();
     }
+
+    /**
+     * Shows a sorted list of RoomCustomer objects (sorted by hotelService)
+     */
+    public void showInOrderUntilWhenCustomersStayInRoom(){
+        for (RoomCustomer roomCustomer : hotelService.sortRoomCustomerByUntilDate())
+        {
+            System.out.println("Customer " + roomCustomer.getCustomerId() + " stays in room " + roomCustomer.getRoomId() + " until " + roomCustomer.getUntilDate());
+        }
+    }
     //-------------------------------------------
 
 
@@ -159,7 +169,7 @@ public class HotelController {
         Scanner sc = new Scanner(System.in);
         System.out.println("Enter employee id to be deleted: ");
         int id = sc.nextInt();
-        if (hotelService.getEmployeeType(id).equals(hotelService.getManagersManagedDepartmentType(managerId))) {
+        if (hotelService.getEmployeeTypeString(id).equals(hotelService.getManagersManagedDepartmentType(managerId))) {
             hotelService.deleteEmployee(id);
             System.out.println("Employee successfully deleted");
         }
@@ -178,7 +188,7 @@ public class HotelController {
         Integer id = sc.nextInt();
         sc.nextLine();
 
-        String employeeType = hotelService.getEmployeeType(id);
+        String employeeType = hotelService.getEmployeeTypeString(id);
         String managerType = hotelService.getManagersManagedDepartmentType(managerId);
 
         if (employeeType.equals(managerType)) {
@@ -222,11 +232,36 @@ public class HotelController {
             System.out.println(employee.getId() + " " + employee.getName() + " " + employee.getSalary() + " " + employee.getPassword() + " " + employee.toString());
     }
 
-    public void showEmployeesSortedBySalary(){
-        System.out.println("\n\nEmployees sorted by salary:");
-        for (Employee employee : hotelService.sortEmployeesBySalary())
-            System.out.println(employee.getId() + " " + employee.getName() + " " + employee.getSalary() + " " + employee.getPassword() + " " + employee.toString());
+    public void showEmployeesSortedBySalary(Integer managerId){
+        String managerType = hotelService.getManagersManagedDepartmentType(managerId);
+        Employee type = (managerType.equals("Receptionist")) ? new Receptionist(-1,"",0,"",null):
+                (managerType.equals("Cleaner")) ? new Cleaner(-1,"",0,"",-1):
+                        (managerType.equals("Manager")) ? new Manager(-1,"",0,"",null):
+                                null;  //daca e de tip department, vom sti ca type e null (nu putem asigna un object de tip Department la type pt ca type e de tip Employee
 
+        System.out.println("\n\nEmployees sorted by salary:");
+        switch (type) {
+            case Manager manager -> {   //show all managers
+                for (Employee employee : hotelService.sortEmployeesBySalary())
+                    if (employee instanceof Manager)
+                        System.out.println(employee.getId() + " " + employee.getName() + " " + employee.getSalary() + " " + employee.getPassword() + " " + employee.toString());
+            }
+            case Cleaner cleaner -> {   //show all cleaners
+                for (Employee employee : hotelService.sortEmployeesBySalary())
+                    if (employee instanceof Cleaner)
+                        System.out.println(employee.getId() + " " + employee.getName() + " " + employee.getSalary() + " " + employee.getPassword() + " " + employee.toString());
+            }
+            case Receptionist receptionist -> {  //show all receptionists
+                for (Employee employee : hotelService.sortEmployeesBySalary())
+                    if (employee instanceof Receptionist)
+                        System.out.println(employee.getId() + " " + employee.getName() + " " + employee.getSalary() + " " + employee.getPassword() + " " + employee.toString());
+            }
+            case null -> {  //cant sort departments by salary
+                System.out.println("\nCant sort departments by salary\n");
+            }
+            default -> {
+            }
+        }
         System.out.println("\n");
     }
 

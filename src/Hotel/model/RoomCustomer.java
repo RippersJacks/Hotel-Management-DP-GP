@@ -1,8 +1,10 @@
 package Hotel.model;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 
 
-public class RoomCustomer implements HasId {
+public class RoomCustomer implements HasId, Comparable<RoomCustomer> {
     private Integer id;
     private int roomId;
     private int customerId;
@@ -66,4 +68,13 @@ public class RoomCustomer implements HasId {
 
     public void setUntilDate(Date untilDate) {this.untilDate = untilDate;}
 
+    @Override
+    public int compareTo(RoomCustomer other) {
+        // Convert both dates to LocalDate
+        LocalDate thisUntilDate = this.getUntilDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate otherUntilDate = other.getUntilDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+        // Compare the dates directly (compares entire date, not just the day)
+        return thisUntilDate.compareTo(otherUntilDate);
+    }
 }
