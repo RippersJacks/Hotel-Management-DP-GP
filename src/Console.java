@@ -1,6 +1,7 @@
-import Hotel.HotelController;
+import Hotel.controller.HotelController;
 import Hotel.HotelRegistrationSystem;
-import Hotel.HotelService;
+import Hotel.repository.FileRepository;
+import Hotel.service.HotelService;
 import Hotel.model.*;
 import Hotel.repository.InMemoryRepository;
 import Hotel.repository.Repository;
@@ -23,7 +24,8 @@ public class Console {
      * Contains the User Interface of the User when he logs in and when he uses the project's functionality.
      */
     public void run() {
-        HotelRegistrationSystem system = new HotelRegistrationSystem(createInMemoryEmployeeRepository());
+        HotelRegistrationSystem system = new HotelRegistrationSystem(createEmployeeFileRepository());
+
         Scanner sc = new Scanner(System.in);
         System.out.println("Please enter your id: ");
         int id = sc.nextInt();
@@ -170,17 +172,23 @@ public class Console {
 
 
     public static void main(String[] args) {
-        Repository<Employee> employeeRepository = createInMemoryEmployeeRepository();
-        Repository<Department> departmentRepository = createInMemoryDepartmentRepository();
-        Repository<Room> roomRepository = createInMemoryRoomRepository();
-        Repository<Customer> customerRepository = createInMemoryCustomerRepository();
-        Repository<RoomCustomer> roomCustomerRepository = createInMemoryRoomCustomerRepository();
+        //Repository<Employee> employeeRepository = createInMemoryEmployeeRepository();
+        //Repository<Department> departmentRepository = createInMemoryDepartmentRepository();
+        //Repository<Room> roomRepository = createInMemoryRoomRepository();
+        //Repository<Customer> customerRepository = createInMemoryCustomerRepository();
+        //Repository<RoomCustomer> roomCustomerRepository = createInMemoryRoomCustomerRepository();
 
-        HotelService hotelService = new HotelService(roomRepository, employeeRepository,customerRepository,departmentRepository,roomCustomerRepository);
+        Console console = getConsole(createEmployeeFileRepository());
+        console.run();
+    }
+
+
+
+    private static Console getConsole(Repository<Employee> employeeRepository) {
+        HotelService hotelService = new HotelService(createRoomFileRepository(), createEmployeeFileRepository(), createCustomerInFileRepository(), createDepartmentFileRepository(), createRoomCustomerInFileRepository());
         HotelController hotelController = new HotelController(hotelService);
 
-        Console console = new Console(hotelController);
-        console.run();
+        return new Console(hotelController);
     }
 
 
@@ -189,6 +197,95 @@ public class Console {
      *
      * @return The in-memory repository for employees.
      */
+
+
+    private static Repository<Employee> createEmployeeFileRepository(){
+        Repository<Employee> employeeRepository = new FileRepository<>("employees.db");
+        //Receptionists
+        List<String> languageList = new ArrayList<>(); languageList.add("german"); languageList.add("english");
+        employeeRepository.create(new Receptionist(100,"Mark",2500,"mark1525",languageList));
+        languageList.clear(); languageList.add("ukrainian");
+        employeeRepository.create(new Receptionist(101,"Zelensceta",2100,"password123",languageList));
+
+        //Cleaners
+        employeeRepository.create(new Cleaner(150,"Tina",1800,"tinytina",1));
+        employeeRepository.create(new Cleaner(151,"Zack",1800,"123zack123",2));
+
+        //Managers
+        employeeRepository.create(new Manager(10,"James",3200,"james1973",9215));
+        employeeRepository.create(new Manager(11,"Victor",4000,"1892WorchestershireSauce!?##Vice",8115));
+
+        return  employeeRepository;
+    }
+
+
+    private static Repository<Room> createRoomFileRepository(){
+        Repository<Room> roomRepo = new FileRepository<>("rooms.db");
+        roomRepo.create(new Room(50, 2, 210, "Twin Room", 80, "Unavailable"));
+        roomRepo.create(new Room(51, 2, 211, "Queen Room", 200, "Dirty"));
+        roomRepo.create(new Room(58, 4, 440, "Suite", 450, "Unavailable"));
+        roomRepo.create(new Room(60,2,212,"Single Room",60,"Available"));
+        return roomRepo;
+    }
+
+
+    private static Repository<Department> createDepartmentFileRepository(){
+        Repository<Department> departmentRepository = new FileRepository<>("departments.db");
+        List<Employee> employees;
+        employees = createInMemoryEmployeeRepository().getAll();
+
+        ArrayList<Employee> cleaners = new ArrayList<>();
+        for (Employee employee : employees) {
+            if (employee instanceof Cleaner) {cleaners.add(employee);}
+        }
+        departmentRepository.create(new Department(9215, "Cleaning Department", cleaners));
+
+        ArrayList<Employee> receptionists = new ArrayList<>();
+        for (Employee employee : employees) {
+            if (employee instanceof Receptionist) {cleaners.add(employee);}
+        }
+        departmentRepository.create(new Department(9216, "Receptionist Department", receptionists));
+
+        ArrayList<Employee> managers = new ArrayList<>();
+        for (Employee employee : employees) {
+            if (employee instanceof Manager) {managers.add(employee);}
+        }
+        departmentRepository.create(new Department(9217, "Manager Department", managers));
+
+        ArrayList<Employee> structuralManagers = new ArrayList<>();
+        departmentRepository.create(new Department(9218,"Structural Department", structuralManagers));
+        return departmentRepository;
+    }
+
+
+    private static Repository<Customer> createCustomerInFileRepository(){
+        Repository<Customer> customerRepo = new FileRepository<>("customers.db");
+        customerRepo.create(new Customer(1000, "Harry Bergenson"));
+        customerRepo.create(new Customer(1002, "Tamara Smith"));
+        customerRepo.create(new Customer(1001, "Julia Beta"));
+        return customerRepo;
+    }
+
+
+    private static Repository<RoomCustomer> createRoomCustomerInFileRepository(){
+        Repository<RoomCustomer> roomCustomerRepo = new FileRepository<>("roomCustomers.db");
+        Calendar calendar = Calendar.getInstance();                                    //calendar is used for creating the date objects
+        calendar.set(2024, Calendar.NOVEMBER, 16);
+        Date fromDate = calendar.getTime();
+        calendar.set(2024, Calendar.NOVEMBER, 22 );
+        Date untilDate = calendar.getTime();
+        roomCustomerRepo.create(new RoomCustomer(4, 50, 1000, fromDate, untilDate));
+
+        calendar.set(2024, Calendar.OCTOBER, 10);
+        fromDate = calendar.getTime();
+        calendar.set(2024, Calendar.OCTOBER, 23 );
+        untilDate = calendar.getTime();
+        roomCustomerRepo.create(new RoomCustomer(5, 58, 1001, fromDate, untilDate));
+
+        return roomCustomerRepo;
+    }
+
+
     private static Repository<Employee> createInMemoryEmployeeRepository() {
         Repository<Employee> employeeRepository = new InMemoryRepository<>();
 
@@ -299,6 +396,5 @@ public class Console {
 
         return roomCustomerRepo;
     }
-
-
+    
 }

@@ -1,6 +1,8 @@
-package Hotel;
+package Hotel.controller;
 
 import Hotel.model.*;
+import Hotel.service.HotelService;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
