@@ -162,6 +162,16 @@ public class HotelService{
 
         return availableRoomList;
     }
+
+    /**
+     * Sorts a copy of the roomCustomerRepository filtering by the end of each customers stay.
+     * @return the sorted list of RoomCustomer objects
+     */
+    List<RoomCustomer> sortRoomCustomerByUntilDate(){
+        List<RoomCustomer> roomCustomerList = new ArrayList<>(roomCustomerRepository.getAll());
+        Collections.sort(roomCustomerList);
+        return roomCustomerList;
+    }
     //--------------------------------------------------
 
 
@@ -234,7 +244,7 @@ public class HotelService{
      * @param id ID of the employee
      * @return String object with name of the type ("Receptionist", "Cleaner" or "Manager")
      */
-    public String getEmployeeType(int id){
+    public String getEmployeeTypeString(int id){
         for (Employee employee : employeeRepository.getAll()){
             if (employee.getId() == id){
                 switch (employee) {
@@ -252,6 +262,12 @@ public class HotelService{
                 }
             }
         }
+        return null;
+    }
+    public Employee getEmployeeTypeObject(int id){
+        for (Employee employee : employeeRepository.getAll())
+            if (employee.getId() == id)
+                return employee;
         return null;
     }
 
@@ -281,6 +297,7 @@ public class HotelService{
         }
         return null;
     }
+
 
     public List<Employee> showAllEmployees(){
         return employeeRepository.getAll();

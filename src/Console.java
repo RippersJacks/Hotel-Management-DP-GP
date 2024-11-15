@@ -45,6 +45,7 @@ public class Console {
                         3. Update a customer
                         4. See all customers
                         5. See all available rooms
+                        6. See in which order the current customers will check out
                         7. Stop
                         0. Logout
                         """);
@@ -72,6 +73,9 @@ public class Console {
                         break;
                     case 5:
                         hotelController.showAllAvailableRooms();
+                        break;
+                    case 6:
+                        hotelController.showInOrderUntilWhenCustomersStayInRoom();
                         break;
                 }
             } else if (role.equalsIgnoreCase("Manager")) {
@@ -125,7 +129,7 @@ public class Console {
                         hotelController.showAllDepartmentsScreen();
                         break;
                     case 10:
-                        hotelController.showEmployeesSortedBySalary();
+                        hotelController.showEmployeesSortedBySalary(id);
                         break;
                 }
             } else if (role.equalsIgnoreCase("Cleaner")) {
@@ -292,16 +296,16 @@ public class Console {
         employeeRepository.create(new Receptionist(101,"Zelensceta",2100,"password123",languageList));
 
         //Cleaners
-        employeeRepository.create(new Cleaner(150,"Tina",1800,"tinytina",1));
-        employeeRepository.create(new Cleaner(151,"Zack",1800,"123zack123",2));
+        employeeRepository.create(new Cleaner(150,"Tina",1700,"tinytina",1));
+        employeeRepository.create(new Cleaner(151,"Zack",1900,"123zack123",2));
 
         //Managers
-        employeeRepository.create(new Manager(10,"James",3200,"james1973",9215));
-        employeeRepository.create(new Manager(11,"Victor",4000,"1892WorchestershireSauce!?##Vice",8115));
+        employeeRepository.create(new Manager(10,"James",3200,"james1973",9215));  //Cleaning Dep.
+        employeeRepository.create(new Manager(11,"Victor",4000,"1892WorchestershireSauce!?##Vice",9216)); //Receptionist Dep.
+        employeeRepository.create(new Manager(12,"Gregor",5300,"0000",9217));   //Manager Dep.
+        employeeRepository.create(new Manager(13,"Jimothy",1200,"hamstersdontsufferenough",9218));  //Structural Dep.
 
         return employeeRepository;
-
-
     }
 
     /**
