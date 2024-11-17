@@ -181,7 +181,7 @@ public class Console {
 
 
     private static Console getConsole(Repository<Employee> employeeRepository) {
-        HotelService hotelService = new HotelService(createRoomFileRepository(), createEmployeeFileRepository(), createCustomerInFileRepository(), createDepartmentFileRepository(), createRoomCustomerInFileRepository());
+        HotelService hotelService = new HotelService(createRoomFileRepository(), employeeRepository, createCustomerInFileRepository(), createDepartmentInFileRepository(), createRoomCustomerInFileRepository());
         HotelController hotelController = new HotelController(hotelService);
 
         return new Console(hotelController);
@@ -225,10 +225,10 @@ public class Console {
     }
 
 
-    private static Repository<Department> createDepartmentFileRepository(){
+    private static Repository<Department> createDepartmentInFileRepository(){
         Repository<Department> departmentRepository = new FileRepository<>("departments.db");
         List<Employee> employees;
-        employees = createInMemoryEmployeeRepository().getAll();
+        employees = createEmployeeFileRepository().getAll();
 
         ArrayList<Employee> cleaners = new ArrayList<>();
         for (Employee employee : employees) {
@@ -238,7 +238,7 @@ public class Console {
 
         ArrayList<Employee> receptionists = new ArrayList<>();
         for (Employee employee : employees) {
-            if (employee instanceof Receptionist) {cleaners.add(employee);}
+            if (employee instanceof Receptionist) {receptionists.add(employee);}
         }
         departmentRepository.create(new Department(9216, "Receptionist Department", receptionists));
 
@@ -249,6 +249,11 @@ public class Console {
         departmentRepository.create(new Department(9217, "Manager Department", managers));
 
         ArrayList<Employee> structuralManagers = new ArrayList<>();
+        for (Employee employee : employees) {
+            if (employee instanceof Manager) {
+                structuralManagers.add(employee);
+            }
+        }
         departmentRepository.create(new Department(9218,"Structural Department", structuralManagers));
         return departmentRepository;
     }
