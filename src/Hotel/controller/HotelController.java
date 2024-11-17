@@ -133,10 +133,12 @@ public class HotelController {
      * Shows a sorted list of RoomCustomer objects (sorted by hotelService)
      */
     public void showInOrderUntilWhenCustomersStayInRoom(){
+        System.out.println();
         for (RoomCustomer roomCustomer : hotelService.sortRoomCustomerByUntilDate())
         {
             System.out.println("Customer " + roomCustomer.getCustomerId() + " stays in room " + roomCustomer.getRoomId() + " until " + roomCustomer.getUntilDate());
         }
+        System.out.println();
     }
     //-------------------------------------------
 
@@ -276,7 +278,7 @@ public class HotelController {
     }
 
     /**
-     * The function checks if a specific manager, the manager of all the departments is
+     * The function checks if a specific manager is the manager of all the departments
      *
      * @param id is the id of a manager
      * @return true or false
@@ -307,7 +309,10 @@ public class HotelController {
         }else System.out.println("You are not authorised to do this");
     }
 
-
+    /**
+     * Updates a department. Only the manager of the department structure may use this function.
+     * @param id id of the manager currently logged in
+     */
     public void updateDepartament(int id){
         if (managerOverDepartments(id)){
             Scanner sc = new Scanner(System.in);
@@ -322,6 +327,27 @@ public class HotelController {
             hotelService.updateDepartment(updatedDepartment);
 
         }else System.out.println("You are not authorised to do this");
+    }
+
+    /**
+     * Shows all departments where the employee average salary is over an input given number. Only the manager of the department structure may use this function.
+     * @param id id of the manager currently logged in
+     */
+    public void showDepartmentsFilteredByAverageSalaryOverGivenNumber(int id){
+        System.out.println("Enter the minimum average salary to be searched by: ");
+        Scanner sc = new Scanner(System.in);
+        int minAvgSalary = sc.nextInt();
+        sc.nextLine();
+
+        System.out.println("\nDepartments with an average salary of over " + minAvgSalary +":");
+
+        List<Department> departmentList = hotelService.getDepartmentsWithOverGivenNumberAvgSalary(minAvgSalary);
+        if (managerOverDepartments(id)){
+            for (Department department : departmentList)
+                System.out.println(department.toString());
+        }
+        else
+            System.out.println("You do not have access to this functionality");
     }
 
     //-------------------------------------------
