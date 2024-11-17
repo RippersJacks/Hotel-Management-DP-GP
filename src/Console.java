@@ -45,6 +45,7 @@ public class Console {
                         3. Update a customer
                         4. See all customers
                         5. See all available rooms
+                        6. See in which order the current customers will check out
                         7. Stop
                         0. Logout
                         """);
@@ -72,6 +73,9 @@ public class Console {
                         break;
                     case 5:
                         hotelController.showAllAvailableRooms();
+                        break;
+                    case 6:
+                        hotelController.showInOrderUntilWhenCustomersStayInRoom();
                         break;
                 }
             } else if (role.equalsIgnoreCase("Manager")) {
@@ -125,7 +129,10 @@ public class Console {
                         hotelController.showAllDepartmentsScreen();
                         break;
                     case 10:
-                        hotelController.showEmployeesSortedBySalary();
+                        hotelController.showEmployeesSortedBySalary(id);
+                        break;
+                    case 11:
+                        hotelController.showDepartmentsFilteredByAverageSalaryOverGivenNumber(id);
                         break;
                 }
             } else if (role.equalsIgnoreCase("Cleaner")) {
@@ -200,8 +207,8 @@ public class Console {
         //Receptionists
         List<String> languageList = new ArrayList<>(); languageList.add("german"); languageList.add("english");
         employeeRepository.create(new Receptionist(100,"Mark",2500,"mark1525",languageList));
-        languageList.clear(); languageList.add("ukrainian");
-        employeeRepository.create(new Receptionist(101,"Zelensceta",2100,"password123",languageList));
+        List<String> languageList2 = new ArrayList<>(); languageList2.add("ukrainian");
+        employeeRepository.create(new Receptionist(101,"Zelensceta",2100,"password123",languageList2));
 
         //Cleaners
         employeeRepository.create(new Cleaner(150,"Tina",1800,"tinytina",1));
@@ -209,7 +216,9 @@ public class Console {
 
         //Managers
         employeeRepository.create(new Manager(10,"James",3200,"james1973",9215));
-        employeeRepository.create(new Manager(11,"Victor",4000,"1892WorchestershireSauce!?##Vice",8115));
+        employeeRepository.create(new Manager(11,"Victor",4000,"1892WorchestershireSauce!?##Vice",9216));
+        employeeRepository.create(new Manager(12,"Morna",4500,"victoriasSecret",9217));
+        employeeRepository.create(new Manager(13,"Herbert",2500,"nerfMiner",9218));
 
         return  employeeRepository;
     }
@@ -236,11 +245,33 @@ public class Console {
         }
         departmentRepository.create(new Department(9215, "Cleaning Department", cleaners));
 
+
+
+
+
+
+        //TODO: Fix insert failure issue
+        //Suspect ca e cv la functia de .create din FileRepository
+
         ArrayList<Employee> receptionists = new ArrayList<>();
         for (Employee employee : employees) {
             if (employee instanceof Receptionist) {receptionists.add(employee);}
         }
+        System.out.println("Lista locala:");
+        for (Employee employee : receptionists) {
+            System.out.println(employee.getName());
+        }
+
         departmentRepository.create(new Department(9216, "Receptionist Department", receptionists));
+
+        System.out.println("Repository:");
+        for (Employee employee : departmentRepository.get(9216).getEmployees()) {
+            System.out.println(employee.getName());
+        }
+
+
+
+
 
         ArrayList<Employee> managers = new ArrayList<>();
         for (Employee employee : employees) {
@@ -250,9 +281,7 @@ public class Console {
 
         ArrayList<Employee> structuralManagers = new ArrayList<>();
         for (Employee employee : employees) {
-            if (employee instanceof Manager) {
-                structuralManagers.add(employee);
-            }
+            if (employee instanceof Manager && ((Manager) employee).getManagedDepartmentID() == 9218) {structuralManagers.add(employee);}
         }
         departmentRepository.create(new Department(9218,"Structural Department", structuralManagers));
         return departmentRepository;
@@ -297,16 +326,16 @@ public class Console {
         employeeRepository.create(new Receptionist(101,"Zelensceta",2100,"password123",languageList));
 
         //Cleaners
-        employeeRepository.create(new Cleaner(150,"Tina",1800,"tinytina",1));
-        employeeRepository.create(new Cleaner(151,"Zack",1800,"123zack123",2));
+        employeeRepository.create(new Cleaner(150,"Tina",1700,"tinytina",1));
+        employeeRepository.create(new Cleaner(151,"Zack",1900,"123zack123",2));
 
         //Managers
-        employeeRepository.create(new Manager(10,"James",3200,"james1973",9215));
-        employeeRepository.create(new Manager(11,"Victor",4000,"1892WorchestershireSauce!?##Vice",8115));
+        employeeRepository.create(new Manager(10,"James",3200,"james1973",9215));  //Cleaning Dep.
+        employeeRepository.create(new Manager(11,"Victor",4000,"1892WorchestershireSauce!?##Vice",9216)); //Receptionist Dep.
+        employeeRepository.create(new Manager(12,"Gregor",5300,"0000",9217));   //Manager Dep.
+        employeeRepository.create(new Manager(13,"Jimothy",1200,"hamstersdontsufferenough",9218));  //Structural Dep.
 
         return employeeRepository;
-
-
     }
 
     /**

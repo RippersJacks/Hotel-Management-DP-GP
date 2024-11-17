@@ -128,6 +128,18 @@ public class HotelController {
             System.out.println(room.toString());
         System.out.println();
     }
+
+    /**
+     * Shows a sorted list of RoomCustomer objects (sorted by hotelService)
+     */
+    public void showInOrderUntilWhenCustomersStayInRoom(){
+        System.out.println();
+        for (RoomCustomer roomCustomer : hotelService.sortRoomCustomerByUntilDate())
+        {
+            System.out.println("Customer " + roomCustomer.getCustomerId() + " stays in room " + roomCustomer.getRoomId() + " until " + roomCustomer.getUntilDate());
+        }
+        System.out.println();
+    }
     //-------------------------------------------
 
 
@@ -161,7 +173,7 @@ public class HotelController {
         Scanner sc = new Scanner(System.in);
         System.out.println("Enter employee id to be deleted: ");
         int id = sc.nextInt();
-        if (hotelService.getEmployeeType(id).equals(hotelService.getManagersManagedDepartmentType(managerId))) {
+        if (hotelService.getEmployeeTypeString(id).equals(hotelService.getManagersManagedDepartmentType(managerId))) {
             hotelService.deleteEmployee(id);
             System.out.println("Employee successfully deleted");
         }
@@ -180,7 +192,7 @@ public class HotelController {
         Integer id = sc.nextInt();
         sc.nextLine();
 
-        String employeeType = hotelService.getEmployeeType(id);
+        String employeeType = hotelService.getEmployeeTypeString(id);
         String managerType = hotelService.getManagersManagedDepartmentType(managerId);
 
         if (employeeType.equals(managerType)) {
@@ -224,11 +236,36 @@ public class HotelController {
             System.out.println(employee.getId() + " " + employee.getName() + " " + employee.getSalary() + " " + employee.getPassword() + " " + employee.toString());
     }
 
-    public void showEmployeesSortedBySalary(){
-        System.out.println("\n\nEmployees sorted by salary:");
-        for (Employee employee : hotelService.sortEmployeesBySalary())
-            System.out.println(employee.getId() + " " + employee.getName() + " " + employee.getSalary() + " " + employee.getPassword() + " " + employee.toString());
+    public void showEmployeesSortedBySalary(Integer managerId){
+        String managerType = hotelService.getManagersManagedDepartmentType(managerId);
+        Employee type = (managerType.equals("Receptionist")) ? new Receptionist(-1,"",0,"",null):
+                (managerType.equals("Cleaner")) ? new Cleaner(-1,"",0,"",-1):
+                        (managerType.equals("Manager")) ? new Manager(-1,"",0,"",null):
+                                null;  //daca e de tip department, vom sti ca type e null (nu putem asigna un object de tip Department la type pt ca type e de tip Employee
 
+        System.out.println("\n\nEmployees sorted by salary:");
+        switch (type) {
+            case Manager manager -> {   //show all managers
+                for (Employee employee : hotelService.sortEmployeesBySalary())
+                    if (employee instanceof Manager)
+                        System.out.println(employee.getId() + " " + employee.getName() + " " + employee.getSalary() + " " + employee.getPassword() + " " + employee.toString());
+            }
+            case Cleaner cleaner -> {   //show all cleaners
+                for (Employee employee : hotelService.sortEmployeesBySalary())
+                    if (employee instanceof Cleaner)
+                        System.out.println(employee.getId() + " " + employee.getName() + " " + employee.getSalary() + " " + employee.getPassword() + " " + employee.toString());
+            }
+            case Receptionist receptionist -> {  //show all receptionists
+                for (Employee employee : hotelService.sortEmployeesBySalary())
+                    if (employee instanceof Receptionist)
+                        System.out.println(employee.getId() + " " + employee.getName() + " " + employee.getSalary() + " " + employee.getPassword() + " " + employee.toString());
+            }
+            case null -> {  //cant sort departments by salary
+                System.out.println("\nCant sort departments by salary\n");
+            }
+            default -> {
+            }
+        }
         System.out.println("\n");
     }
 
@@ -241,7 +278,7 @@ public class HotelController {
     }
 
     /**
-     * The function checks if a specific manager, the manager of all the departments is
+     * The function checks if a specific manager is the manager of all the departments
      *
      * @param id is the id of a manager
      * @return true or false
@@ -272,7 +309,10 @@ public class HotelController {
         }else System.out.println("You are not authorised to do this");
     }
 
-
+    /**
+     * Updates a department. Only the manager of the department structure may use this function.
+     * @param id id of the manager currently logged in
+     */
     public void updateDepartament(int id){
         if (managerOverDepartments(id)){
             Scanner sc = new Scanner(System.in);
@@ -287,6 +327,27 @@ public class HotelController {
             hotelService.updateDepartment(updatedDepartment);
 
         }else System.out.println("You are not authorised to do this");
+    }
+
+    /**
+     * Shows all departments where the employee average salary is over an input given number. Only the manager of the department structure may use this function.
+     * @param id id of the manager currently logged in
+     */
+    public void showDepartmentsFilteredByAverageSalaryOverGivenNumber(int id){
+        System.out.println("Enter the minimum average salary to be searched by: ");
+        Scanner sc = new Scanner(System.in);
+        int minAvgSalary = sc.nextInt();
+        sc.nextLine();
+
+        System.out.println("\nDepartments with an average salary of over " + minAvgSalary +":");
+
+        List<Department> departmentList = hotelService.getDepartmentsWithOverGivenNumberAvgSalary(minAvgSalary);
+        if (managerOverDepartments(id)){
+            for (Department department : departmentList)
+                System.out.println(department.toString());
+        }
+        else
+            System.out.println("You do not have access to this functionality");
     }
 
     //-------------------------------------------

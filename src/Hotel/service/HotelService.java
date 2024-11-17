@@ -6,6 +6,7 @@ import Hotel.repository.Repository;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.function.Predicate;
 
 public class HotelService{
     private final Repository<Room> roomRepository;
@@ -162,6 +163,16 @@ public class HotelService{
 
         return availableRoomList;
     }
+
+    /**
+     * Sorts a copy of the roomCustomerRepository filtering by the end of each customers stay.
+     * @return the sorted list of RoomCustomer objects
+     */
+    public List<RoomCustomer> sortRoomCustomerByUntilDate(){
+        List<RoomCustomer> roomCustomerList = new ArrayList<>(roomCustomerRepository.getAll());
+        Collections.sort(roomCustomerList);
+        return roomCustomerList;
+    }
     //--------------------------------------------------
 
 
@@ -234,7 +245,7 @@ public class HotelService{
      * @param id ID of the employee
      * @return String object with name of the type ("Receptionist", "Cleaner" or "Manager")
      */
-    public String getEmployeeType(int id){
+    public String getEmployeeTypeString(int id){
         for (Employee employee : employeeRepository.getAll()){
             if (employee.getId() == id){
                 switch (employee) {
@@ -254,6 +265,12 @@ public class HotelService{
         }
         return null;
     }
+    public Employee getEmployeeTypeObject(int id){
+        for (Employee employee : employeeRepository.getAll())
+            if (employee.getId() == id)
+                return employee;
+        return null;
+    }
 
     /**
      * Returns what department type a manager has access to. (The type of employee is returned, ex. Receptionist)
@@ -267,6 +284,7 @@ public class HotelService{
         for (Employee employee : employeeRepository.getAll()){
             if (employee.getId() == id){
                 manager = (Manager)employee;
+                break;
             }
         }
         for (Department department : departmentRepository.getAll()){
@@ -281,6 +299,7 @@ public class HotelService{
         }
         return null;
     }
+
 
     public List<Employee> showAllEmployees(){
         return employeeRepository.getAll();
@@ -318,8 +337,43 @@ public class HotelService{
         departmentRepository.delete(id);
     }
 
-
     public void updateDepartment(Department department) {departmentRepository.update(department);}
+
+
+    /**
+     * Makes a sum of each employee's salary (of given department) and divides it by the employee count (of given department).
+     * @param department object of type Department
+     * @return int value containing the average employee salary
+     */
+    public int getAvgSalaryOfADepartment(Department department) {
+        int sum = 0;
+        for (Employee employee : department.getEmployees()) {
+            sum += employee.getSalary();
+        }
+        return sum;
+    }
+
+    /**
+     * Filters the department repository and returns all departments with an average salary of over an input given number.
+     * <p>
+     * Average salary is calculated by adding all employee salaries and then dividing it by the employee count.
+     * @return list of departments (filtered)
+     */
+    public List<Department> getDepartmentsWithOverGivenNumberAvgSalary(int inputNumber) {
+
+        //lambda function that gets the average salary of a given department
+        //and then asks if the average salary of the department is higher than the input number
+        Predicate<Department> avgSalaryOverGivenNr = department -> {
+            int sum = getAvgSalaryOfADepartment(department);
+            System.out.println(department.countEmployees());
+            return sum / department.countEmployees() > inputNumber;
+        };
+
+        List<Department> departmentList = departmentRepository.getAll();
+        return departmentList.stream().filter(avgSalaryOverGivenNr).toList();
+    }
+
+
     //--------------------------------------------------
 
 
