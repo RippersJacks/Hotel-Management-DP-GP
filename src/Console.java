@@ -91,7 +91,6 @@ public class Console {
                         8. Show all employees
                         9. Show all departments
                         10. Show all employees sorted by salary
-                        11. Show all departments sorted by a salary average bigger than a given number
                         7. Stop
                         0. Logout
                         """);
@@ -189,7 +188,7 @@ public class Console {
 
 
     private static Console getConsole(Repository<Employee> employeeRepository) {
-        HotelService hotelService = new HotelService(createRoomFileRepository(), createEmployeeFileRepository(), createCustomerInFileRepository(), createDepartmentFileRepository(), createRoomCustomerInFileRepository());
+        HotelService hotelService = new HotelService(createRoomFileRepository(), employeeRepository, createCustomerInFileRepository(), createDepartmentInFileRepository(), createRoomCustomerInFileRepository());
         HotelController hotelController = new HotelController(hotelService);
 
         return new Console(hotelController);
@@ -235,10 +234,10 @@ public class Console {
     }
 
 
-    private static Repository<Department> createDepartmentFileRepository(){
+    private static Repository<Department> createDepartmentInFileRepository(){
         Repository<Department> departmentRepository = new FileRepository<>("departments.db");
         List<Employee> employees;
-        employees = createInMemoryEmployeeRepository().getAll();  //TODO: createInFileRepo (nu e problema actuala)
+        employees = createEmployeeFileRepository().getAll();
 
         ArrayList<Employee> cleaners = new ArrayList<>();
         for (Employee employee : employees) {
