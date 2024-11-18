@@ -151,17 +151,11 @@ public class HotelService{
      * @return list of rooms
      */
     public List<Room> getAvailableRooms(){
-        List<Room> roomList = roomRepository.getAll();
-        List<Room> availableRoomList = new ArrayList<>();
-
         Receptionist receptionistFunction = new Receptionist(0,"",0,"",null);
+        //lambda function inheriting the checkRoom functionality of the Receptionist Class
+        Predicate<Room> checkIfRoomIsAvailable = receptionistFunction::checkRoom;
 
-        for (Room room : roomList) {
-            if (receptionistFunction.checkRoom(room))
-                availableRoomList.add(room);
-        }
-
-        return availableRoomList;
+        return roomRepository.getAll().stream().filter(checkIfRoomIsAvailable).toList();
     }
 
     /**
