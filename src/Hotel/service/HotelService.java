@@ -350,7 +350,7 @@ public class HotelService{
         for (Employee employee : department.getEmployees()) {
             sum += employee.getSalary();
         }
-        return sum;
+        return sum / department.countEmployees();
     }
 
     /**
@@ -365,8 +365,7 @@ public class HotelService{
         //and then asks if the average salary of the department is higher than the input number
         Predicate<Department> avgSalaryOverGivenNr = department -> {
             int sum = getAvgSalaryOfADepartment(department);
-            System.out.println(department.countEmployees());
-            return sum / department.countEmployees() > inputNumber;
+            return sum > inputNumber;
         };
 
         List<Department> departmentList = departmentRepository.getAll();

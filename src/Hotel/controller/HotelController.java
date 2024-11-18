@@ -344,7 +344,7 @@ public class HotelController {
         List<Department> departmentList = hotelService.getDepartmentsWithOverGivenNumberAvgSalary(minAvgSalary);
         if (managerOverDepartments(id)){
             for (Department department : departmentList)
-                System.out.println(department.toString());
+                System.out.println(hotelService.getAvgSalaryOfADepartment(department) + " for " + department);
         }
         else
             System.out.println("You do not have access to this functionality");
