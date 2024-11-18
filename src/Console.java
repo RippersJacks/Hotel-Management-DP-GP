@@ -91,6 +91,7 @@ public class Console {
                         8. Show all employees
                         9. Show all departments
                         10. Show all employees sorted by salary
+                        11. Show departments with a salary average bigger than a given number
                         7. Stop
                         0. Logout
                         """);
@@ -245,33 +246,11 @@ public class Console {
         }
         departmentRepository.create(new Department(9215, "Cleaning Department", cleaners));
 
-
-
-
-
-
-        //TODO: Fix insert failure issue
-        //Suspect ca e cv la functia de .create din FileRepository
-
         ArrayList<Employee> receptionists = new ArrayList<>();
         for (Employee employee : employees) {
             if (employee instanceof Receptionist) {receptionists.add(employee);}
         }
-        System.out.println("Lista locala:");
-        for (Employee employee : receptionists) {
-            System.out.println(employee.getName());
-        }
-
         departmentRepository.create(new Department(9216, "Receptionist Department", receptionists));
-
-        System.out.println("Repository:");
-        for (Employee employee : departmentRepository.get(9216).getEmployees()) {
-            System.out.println(employee.getName());
-        }
-
-
-
-
 
         ArrayList<Employee> managers = new ArrayList<>();
         for (Employee employee : employees) {
