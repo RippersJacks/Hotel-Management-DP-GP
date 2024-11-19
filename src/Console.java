@@ -3,7 +3,6 @@ import Hotel.HotelRegistrationSystem;
 import Hotel.repository.FileRepository;
 import Hotel.service.HotelService;
 import Hotel.model.*;
-import Hotel.repository.InMemoryRepository;
 import Hotel.repository.Repository;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +22,16 @@ public class Console {
     /**
      * Contains the User Interface of the User when he logs in and when he uses the project's functionality.
      */
+
+    private int takeUsersChoice() {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter your choice: ");
+        int choice = sc.nextInt();
+        sc.nextLine();
+        return choice;
+    }
+
+
     public void run() {
         HotelRegistrationSystem system = new HotelRegistrationSystem(createEmployeeFileRepository());
 
@@ -49,10 +58,8 @@ public class Console {
                         7. Stop
                         0. Logout
                         """);
-                System.out.println("Enter your choice: ");
-                int choice = sc.nextInt();
-                sc.nextLine();
 
+                int choice = takeUsersChoice();
                 if (choice == 0) {
                     run();
                     break;
@@ -88,22 +95,21 @@ public class Console {
                         4. Add a new department
                         5. Update a department
                         6. Delete a department
-                        8. Show all employees
-                        9. Show all departments
-                        10. Show all employees sorted by salary
-                        11. Show departments with a salary average bigger than a given number
-                        7. Stop
+                        7. Show all employees
+                        8. Show all departments
+                        9. Show all employees sorted by salary
+                        10. Show departments with a salary average bigger than a given number
+                        11. Stop
                         0. Logout
                         """);
 
-                System.out.println("Enter your choice: ");
-                int choice = sc.nextInt();
-                sc.nextLine();
+
+                int choice = takeUsersChoice();
                 if (choice == 0) {
                     run();
                     break;
                 }
-                if (choice == 7) break;
+                if (choice == 11) break;
                 switch (choice) {
                     case 1:
                         hotelController.createEmployee(id);
@@ -123,16 +129,16 @@ public class Console {
                     case 6:
                         hotelController.deleteDepartment(id);
                         break;
-                    case 8:
+                    case 7:
                         hotelController.showAllEmployeesOnScreen();
                         break;
-                    case 9:
+                    case 8:
                         hotelController.showAllDepartmentsScreen();
                         break;
-                    case 10:
+                    case 9:
                         hotelController.showEmployeesSortedBySalary(id);
                         break;
-                    case 11:
+                    case 10:
                         hotelController.showDepartmentsFilteredByAverageSalaryOverGivenNumber(id);
                         break;
                 }
@@ -142,18 +148,16 @@ public class Console {
                         Choose what you want to do
                         1. See all the dirty rooms
                         2. Clean a room
-                        7. Stop
+                        3. Stop
                         0. Logout
                         """);
-                System.out.println("Enter your choice: ");
-                int choice = sc.nextInt();
-                sc.nextLine();
 
+                int choice = takeUsersChoice();
                 if (choice == 0) {
                     run();
                     break;
                 }
-                if (choice == 7) break;
+                if (choice == 3) break;
                 switch (choice) {
                     case 1:
                         hotelController.checkDirtyRoomsValidate();
@@ -176,16 +180,9 @@ public class Console {
 
 
     public static void main(String[] args) {
-        //Repository<Employee> employeeRepository = createInMemoryEmployeeRepository();
-        //Repository<Department> departmentRepository = createInMemoryDepartmentRepository();
-        //Repository<Room> roomRepository = createInMemoryRoomRepository();
-        //Repository<Customer> customerRepository = createInMemoryCustomerRepository();
-        //Repository<RoomCustomer> roomCustomerRepository = createInMemoryRoomCustomerRepository();
-
         Console console = getConsole(createEmployeeFileRepository());
         console.run();
     }
-
 
 
     private static Console getConsole(Repository<Employee> employeeRepository) {
@@ -203,71 +200,82 @@ public class Console {
      */
 
 
-    private static Repository<Employee> createEmployeeFileRepository(){
+    private static Repository<Employee> createEmployeeFileRepository() {
         Repository<Employee> employeeRepository = new FileRepository<>("employees.db");
         //Receptionists
-        List<String> languageList = new ArrayList<>(); languageList.add("german"); languageList.add("english");
-        employeeRepository.create(new Receptionist(100,"Mark",2500,"mark1525",languageList));
-        List<String> languageList2 = new ArrayList<>(); languageList2.add("ukrainian");
-        employeeRepository.create(new Receptionist(101,"Zelensceta",2100,"password123",languageList2));
+        List<String> languageList = new ArrayList<>();
+        languageList.add("german");
+        languageList.add("english");
+        employeeRepository.create(new Receptionist(100, "Mark", 2500, "mark1525", languageList));
+        List<String> languageList2 = new ArrayList<>();
+        languageList2.add("ukrainian");
+        employeeRepository.create(new Receptionist(101, "Zelensceta", 2100, "password123", languageList2));
 
         //Cleaners
-        employeeRepository.create(new Cleaner(150,"Tina",1800,"tinytina",1));
-        employeeRepository.create(new Cleaner(151,"Zack",1800,"123zack123",2));
+        employeeRepository.create(new Cleaner(150, "Tina", 1800, "tinytina", 1));
+        employeeRepository.create(new Cleaner(151, "Zack", 1800, "123zack123", 2));
 
         //Managers
-        employeeRepository.create(new Manager(10,"James",3200,"james1973",9215));
-        employeeRepository.create(new Manager(11,"Victor",4000,"1892WorchestershireSauce!?##Vice",9216));
-        employeeRepository.create(new Manager(12,"Morna",4500,"victoriasSecret",9217));
-        employeeRepository.create(new Manager(13,"Herbert",2500,"nerfMiner",9218));
+        employeeRepository.create(new Manager(10, "James", 3200, "james1973", 9215));
+        employeeRepository.create(new Manager(11, "Victor", 4000, "1892WorchestershireSauce!?##Vice", 9216));
+        employeeRepository.create(new Manager(12, "Morna", 4500, "victoriasSecret", 9217));
+        employeeRepository.create(new Manager(13, "Herbert", 2500, "nerfMiner", 9218));
 
-        return  employeeRepository;
+        return employeeRepository;
     }
 
 
-    private static Repository<Room> createRoomFileRepository(){
+    private static Repository<Room> createRoomFileRepository() {
         Repository<Room> roomRepo = new FileRepository<>("rooms.db");
         roomRepo.create(new Room(50, 2, 210, "Twin Room", 80, "Unavailable"));
         roomRepo.create(new Room(51, 2, 211, "Queen Room", 200, "Dirty"));
         roomRepo.create(new Room(58, 4, 440, "Suite", 450, "Unavailable"));
-        roomRepo.create(new Room(60,2,212,"Single Room",60,"Available"));
+        roomRepo.create(new Room(60, 2, 212, "Single Room", 60, "Available"));
         return roomRepo;
     }
 
 
-    private static Repository<Department> createDepartmentInFileRepository(){
+    private static Repository<Department> createDepartmentInFileRepository() {
         Repository<Department> departmentRepository = new FileRepository<>("departments.db");
         List<Employee> employees;
         employees = createEmployeeFileRepository().getAll();
 
         ArrayList<Employee> cleaners = new ArrayList<>();
         for (Employee employee : employees) {
-            if (employee instanceof Cleaner) {cleaners.add(employee);}
+            if (employee instanceof Cleaner) {
+                cleaners.add(employee);
+            }
         }
         departmentRepository.create(new Department(9215, "Cleaning Department", cleaners));
 
         ArrayList<Employee> receptionists = new ArrayList<>();
         for (Employee employee : employees) {
-            if (employee instanceof Receptionist) {receptionists.add(employee);}
+            if (employee instanceof Receptionist) {
+                receptionists.add(employee);
+            }
         }
         departmentRepository.create(new Department(9216, "Receptionist Department", receptionists));
 
         ArrayList<Employee> managers = new ArrayList<>();
         for (Employee employee : employees) {
-            if (employee instanceof Manager) {managers.add(employee);}
+            if (employee instanceof Manager) {
+                managers.add(employee);
+            }
         }
         departmentRepository.create(new Department(9217, "Manager Department", managers));
 
         ArrayList<Employee> structuralManagers = new ArrayList<>();
         for (Employee employee : employees) {
-            if (employee instanceof Manager && ((Manager) employee).getManagedDepartmentID() == 9218) {structuralManagers.add(employee);}
+            if (employee instanceof Manager && ((Manager) employee).getManagedDepartmentID() == 9218) {
+                structuralManagers.add(employee);
+            }
         }
-        departmentRepository.create(new Department(9218,"Structural Department", structuralManagers));
+        departmentRepository.create(new Department(9218, "Structural Department", structuralManagers));
         return departmentRepository;
     }
 
 
-    private static Repository<Customer> createCustomerInFileRepository(){
+    private static Repository<Customer> createCustomerInFileRepository() {
         Repository<Customer> customerRepo = new FileRepository<>("customers.db");
         customerRepo.create(new Customer(1000, "Harry Bergenson"));
         customerRepo.create(new Customer(1002, "Tamara Smith"));
@@ -276,134 +284,22 @@ public class Console {
     }
 
 
-    private static Repository<RoomCustomer> createRoomCustomerInFileRepository(){
+    private static Repository<RoomCustomer> createRoomCustomerInFileRepository() {
         Repository<RoomCustomer> roomCustomerRepo = new FileRepository<>("roomCustomers.db");
         Calendar calendar = Calendar.getInstance();                                    //calendar is used for creating the date objects
         calendar.set(2024, Calendar.NOVEMBER, 16);
         Date fromDate = calendar.getTime();
-        calendar.set(2024, Calendar.NOVEMBER, 22 );
+        calendar.set(2024, Calendar.NOVEMBER, 22);
         Date untilDate = calendar.getTime();
         roomCustomerRepo.create(new RoomCustomer(4, 50, 1000, fromDate, untilDate));
 
         calendar.set(2024, Calendar.OCTOBER, 10);
         fromDate = calendar.getTime();
-        calendar.set(2024, Calendar.OCTOBER, 23 );
+        calendar.set(2024, Calendar.OCTOBER, 23);
         untilDate = calendar.getTime();
         roomCustomerRepo.create(new RoomCustomer(5, 58, 1001, fromDate, untilDate));
 
         return roomCustomerRepo;
     }
-
-
-    private static Repository<Employee> createInMemoryEmployeeRepository() {
-        Repository<Employee> employeeRepository = new InMemoryRepository<>();
-
-        //Receptionists
-        List<String> languageList = new ArrayList<>(); languageList.add("german"); languageList.add("english");
-        employeeRepository.create(new Receptionist(100,"Mark",2500,"mark1525",languageList));
-        languageList.clear(); languageList.add("ukrainian");
-        employeeRepository.create(new Receptionist(101,"Zelensceta",2100,"password123",languageList));
-
-        //Cleaners
-        employeeRepository.create(new Cleaner(150,"Tina",1700,"tinytina",1));
-        employeeRepository.create(new Cleaner(151,"Zack",1900,"123zack123",2));
-
-        //Managers
-        employeeRepository.create(new Manager(10,"James",3200,"james1973",9215));  //Cleaning Dep.
-        employeeRepository.create(new Manager(11,"Victor",4000,"1892WorchestershireSauce!?##Vice",9216)); //Receptionist Dep.
-        employeeRepository.create(new Manager(12,"Gregor",5300,"0000",9217));   //Manager Dep.
-        employeeRepository.create(new Manager(13,"Jimothy",1200,"hamstersdontsufferenough",9218));  //Structural Dep.
-
-        return employeeRepository;
-    }
-
-    /**
-     * Creates an in-memory repository for departments and populates it with some initial data.
-     *
-     * @return The in-memory repository for departments.
-     */
-    private static Repository<Department> createInMemoryDepartmentRepository() {
-        Repository<Department> departmentRepo = new InMemoryRepository<>();
-
-        List<Employee> employees;
-        employees = createInMemoryEmployeeRepository().getAll();
-
-        ArrayList<Employee> cleaners = new ArrayList<>();
-        for (Employee employee : employees) {
-            if (employee instanceof Cleaner) {cleaners.add(employee);}
-        }
-        departmentRepo.create(new Department(9215, "Cleaning Department", cleaners));
-
-        ArrayList<Employee> receptionists = new ArrayList<>();
-        for (Employee employee : employees) {
-            if (employee instanceof Receptionist) {cleaners.add(employee);}
-        }
-        departmentRepo.create(new Department(9216, "Receptionist Department", receptionists));
-
-        ArrayList<Employee> managers = new ArrayList<>();
-        for (Employee employee : employees) {
-            if (employee instanceof Manager) {managers.add(employee);}
-        }
-        departmentRepo.create(new Department(9217, "Manager Department", managers));
-
-        ArrayList<Employee> structuralManagers = new ArrayList<>();
-        departmentRepo.create(new Department(9218,"Structural Department", structuralManagers));
-        return departmentRepo;
-    }
-
-    /**
-     * Creates an in-memory repository for rooms and populates it with some initial data.
-     *
-     * @return The in-memory repository for rooms.
-     */
-
-
-    private static Repository<Room> createInMemoryRoomRepository(){
-        Repository<Room> roomRepo = new InMemoryRepository<>();
-        roomRepo.create(new Room(50, 2, 210, "Twin Room", 80, "Unavailable"));
-        roomRepo.create(new Room(51, 2, 211, "Queen Room", 200, "Dirty"));
-        roomRepo.create(new Room(58, 4, 440, "Suite", 450, "Unavailable"));
-        roomRepo.create(new Room(60,2,212,"Single Room",60,"Available"));
-        return roomRepo;
-    }
-
-    /**
-     * Creates an in-memory repository for customers and populates it with some initial data.
-     *
-     * @return The in-memory repository for customers.
-     */
-
-    private static Repository<Customer> createInMemoryCustomerRepository(){
-        Repository<Customer> customerRepo = new InMemoryRepository<>();
-        customerRepo.create(new Customer(1000, "Harry Bergenson"));
-        customerRepo.create(new Customer(1002, "Tamara Smith"));
-        customerRepo.create(new Customer(1001, "Julia Beta"));
-        return customerRepo;
-    }
-
-
-    /**
-     * Creates an in-memory repository for roomCustomers and populates it with some initial data.
-     *
-     * @return The in-memory repository for roomCustomers.
-     */
-
-    private static Repository<RoomCustomer> createInMemoryRoomCustomerRepository(){
-        Repository<RoomCustomer> roomCustomerRepo = new InMemoryRepository<>();
-        Calendar calendar = Calendar.getInstance();                                    //calendar is used for creating the date objects
-        calendar.set(2024, Calendar.NOVEMBER, 16);
-        Date fromDate = calendar.getTime();
-        calendar.set(2024, Calendar.NOVEMBER, 22 );
-        Date untilDate = calendar.getTime();
-        roomCustomerRepo.create(new RoomCustomer(4, 50, 1000, fromDate, untilDate));
-
-        calendar.set(2024, Calendar.OCTOBER, 10);
-        fromDate = calendar.getTime();
-        calendar.set(2024, Calendar.OCTOBER, 23 );
-        untilDate = calendar.getTime();
-        roomCustomerRepo.create(new RoomCustomer(5, 58, 1001, fromDate, untilDate));
-
-        return roomCustomerRepo;
-    }
-    
 }
+

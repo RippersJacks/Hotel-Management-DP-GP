@@ -307,7 +307,6 @@ public class HotelService{
      */
     public List<Employee> sortEmployeesBySalary(){
         List<Employee> sortedEmployeeList = new ArrayList<>(employeeRepository.getAll());
-        System.out.println("Ajunge");
 
         Collections.sort(sortedEmployeeList);
         return sortedEmployeeList;
