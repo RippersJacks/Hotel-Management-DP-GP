@@ -233,7 +233,7 @@ public class HotelController {
     public void showAllEmployeesOnScreen(){
         System.out.println("\nCurrent list of employees:");
         for (Employee employee : hotelService.showAllEmployees())
-            System.out.println(employee.getId() + " " + employee.getName() + " " + employee.getSalary() + " " + employee.getPassword() + " " + employee.toString());
+            System.out.println(employee.getId() + " " + employee.getName() + " " + employee.getSalary() + " " + employee.getPassword() + " " + employee);
     }
 
     public void showEmployeesSortedBySalary(Integer managerId){
@@ -248,21 +248,20 @@ public class HotelController {
             case Manager manager -> {   //show all managers
                 for (Employee employee : hotelService.sortEmployeesBySalary())
                     if (employee instanceof Manager)
-                        System.out.println(employee.getId() + " " + employee.getName() + " " + employee.getSalary() + " " + employee.getPassword() + " " + employee.toString());
+                        System.out.println(employee.getId() + " " + employee.getName() + " " + employee.getSalary() + " " + employee.getPassword() + " " + employee);
             }
             case Cleaner cleaner -> {   //show all cleaners
                 for (Employee employee : hotelService.sortEmployeesBySalary())
                     if (employee instanceof Cleaner)
-                        System.out.println(employee.getId() + " " + employee.getName() + " " + employee.getSalary() + " " + employee.getPassword() + " " + employee.toString());
+                        System.out.println(employee.getId() + " " + employee.getName() + " " + employee.getSalary() + " " + employee.getPassword() + " " + employee);
             }
             case Receptionist receptionist -> {  //show all receptionists
                 for (Employee employee : hotelService.sortEmployeesBySalary())
                     if (employee instanceof Receptionist)
-                        System.out.println(employee.getId() + " " + employee.getName() + " " + employee.getSalary() + " " + employee.getPassword() + " " + employee.toString());
+                        System.out.println(employee.getId() + " " + employee.getName() + " " + employee.getSalary() + " " + employee.getPassword() + " " + employee);
             }
-            case null -> {  //cant sort departments by salary
-                System.out.println("\nCant sort departments by salary\n");
-            }
+            case null -> //cant sort departments by salary
+                    System.out.println("\nCant sort departments by salary\n");
             default -> {
             }
         }
