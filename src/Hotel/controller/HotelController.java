@@ -54,7 +54,7 @@ public class HotelController {
     //-----------RECEPTIONIST SECTION------------
 
     /**
-     * Creates a customer in the database with an automatically chosen ID and a name given trough input.
+     * Creates a customer in the database with an automatically chosen ID and a name given through input.
      * It also saves a roomCustomer in the database.
      * Everything happens after it checks, if the clients desired room type exists and is available.
      */
@@ -139,6 +139,24 @@ public class HotelController {
             System.out.println("Customer " + roomCustomer.getCustomerId() + " stays in room " + roomCustomer.getRoomId() + " until " + roomCustomer.getUntilDate());
         }
         System.out.println();
+    }
+
+
+    /**
+     * Shows all rooms of a customer on the screen.
+     */
+    public void showAllRoomsOfACustomer(){
+
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter customer id: ");
+        int customerID = sc.nextInt();
+        sc.nextLine();
+
+        List<Room> roomList = hotelService.getAllRoomsOfACustomer(customerID);
+
+        System.out.println("Rooms belonging to customer " + customerID + ": ");
+        for (Room room: roomList)
+            System.out.println(room.toString());
     }
     //-------------------------------------------
 
@@ -267,6 +285,7 @@ public class HotelController {
         }
         System.out.println("\n");
     }
+
 
 
     //-------DEPARTMENT SECTION (still belongs to Manager section; one manager manages the department structure)--------

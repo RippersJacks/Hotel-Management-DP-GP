@@ -55,7 +55,8 @@ public class Console {
                         4. See all customers
                         5. See all available rooms
                         6. See in which order the current customers will check out
-                        7. Stop
+                        7. See all rooms of a customer
+                        8. Stop
                         0. Logout
                         """);
 
@@ -64,7 +65,7 @@ public class Console {
                     run();
                     break;
                 }
-                if (choice == 7) break;
+                if (choice == 8) break;
                 switch (choice) {
                     case 1:
                         hotelController.createClientValidate();
@@ -83,6 +84,9 @@ public class Console {
                         break;
                     case 6:
                         hotelController.showInOrderUntilWhenCustomersStayInRoom();
+                        break;
+                    case 7:
+                        hotelController.showAllRoomsOfACustomer();
                         break;
                 }
             } else if (role.equalsIgnoreCase("Manager")) {

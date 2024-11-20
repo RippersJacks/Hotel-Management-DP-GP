@@ -167,6 +167,25 @@ public class HotelService{
         Collections.sort(roomCustomerList);
         return roomCustomerList;
     }
+
+
+    /**
+     * Returns a list containing all rooms reserved by a specific customer.
+     * @param customerID the ID of the searched customer
+     * @return list of rooms
+     */
+    public List<Room> getAllRoomsOfACustomer(int customerID){
+
+        List<Room> roomList = new ArrayList<>();
+
+        for (RoomCustomer roomCustomer : roomCustomerRepository.getAll()) {
+            if (roomCustomer.getCustomerId() == customerID)
+                roomList.add(roomRepository.get(roomCustomer.getRoomId()));
+        }
+
+        return roomList;
+    }
+
     //--------------------------------------------------
 
 
