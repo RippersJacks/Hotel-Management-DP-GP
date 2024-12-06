@@ -1,10 +1,12 @@
-package Hotel.repository;
+package Hotel.repository.DBRepository;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import Hotel.model.HasId;
+import Hotel.model.Room;
+import Hotel.repository.Repository;
 
 public abstract class DBRepository<T extends HasId> implements Repository<T>, AutoCloseable {
 
