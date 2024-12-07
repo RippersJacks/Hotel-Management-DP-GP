@@ -5,8 +5,8 @@ import java.util.List;
 public class Receptionist extends Employee implements CheckRoom{
     private List<String> languages;
 
-    public Receptionist(Integer id, String name, int salary, String password, List<String> languages) {
-        super(id, name, salary, password);
+    public Receptionist(Integer id, String name, int salary, String password, int departmentId, List<String> languages) {
+        super(id, name, salary, password, departmentId);
         this.languages = languages;
     }
 

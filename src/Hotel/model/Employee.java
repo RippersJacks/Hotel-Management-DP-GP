@@ -5,12 +5,14 @@ public abstract class Employee implements HasId, Comparable<Employee> {
     private String name;
     private int salary;
     private String password;
+    private int DepartmentId;
 
-    public Employee(Integer id, String name, int salary, String password) {
+    public Employee(Integer id, String name, int salary, String password, Integer DepartmentId) {
         this.id = id;
         this.name = name;
         this.salary = salary;
         this.password = password;
+        this.DepartmentId = DepartmentId;
     }
 
     @Override
@@ -44,6 +46,14 @@ public abstract class Employee implements HasId, Comparable<Employee> {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public int getDepartmentId() {
+        return DepartmentId;
+    }
+
+    public void setDepartmentId(int departmentId) {
+        DepartmentId = departmentId;
     }
 
     @Override

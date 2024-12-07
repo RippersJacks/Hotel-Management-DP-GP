@@ -3,8 +3,8 @@ package Hotel.model;
 public class Cleaner extends Employee implements CheckRoom {
     private int floor;
 
-    public Cleaner(Integer id, String name, int salary, String password, int floor) {
-        super(id, name, salary, password);
+    public Cleaner(Integer id, String name, int salary, String password, int departmentId, int floor) {
+        super(id, name, salary,password, departmentId);
         this.floor = floor;
     }
 

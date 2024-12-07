@@ -1,5 +1,6 @@
 package Hotel;
 
+import Hotel.controller.HotelController;
 import Hotel.model.Cleaner;
 import Hotel.model.Employee;
 import Hotel.model.Manager;
@@ -10,15 +11,15 @@ import java.util.Scanner;
 
 public class HotelRegistrationSystem {
 
-    private final Repository<Employee> employeeRepo;
+    private final HotelController controller;
 
     /**
      * Manages the verification of the User's credentials; if he is found in the database, his role as an employee is returned.
      * If not, N/A is returned; wrong credentials have been introduced.
-     * @param employeeRepo repository containing all employees
+     * @param controller repository containing all employees
      */
-    public HotelRegistrationSystem(Repository<Employee> employeeRepo) {
-        this.employeeRepo = employeeRepo;
+    public HotelRegistrationSystem(HotelController controller) {
+        this.controller = controller;
     }
 
 
@@ -35,7 +36,7 @@ public class HotelRegistrationSystem {
      * @return      the type of the Employee, as a String object
      */
     public String login(int id, String password) {
-        for (Employee employee: employeeRepo.getAll())
+        for (Employee employee: controller.getAllEmployees())
             if (employee.getId() == id && employee.getPassword().equals(password)) //user found
             {
                 switch (employee) {
