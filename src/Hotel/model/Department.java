@@ -12,12 +12,10 @@ public class Department implements HasId {
      * Class: Department; contains an ID, a name and a list of all employees that belong to the department
      * @param id The ID of the department.
      * @param name The name of the department.
-     * @param employees The list with all employees of the department.
      */
-    public Department(Integer id, String name, List<Employee> employees) {
+    public Department(Integer id, String name) {
         this.id = id;
         this.name = name;
-        this.employees = employees;
     }
 
 @Override
@@ -37,29 +35,7 @@ public class Department implements HasId {
         this.name = name;
     }
 
-    /**
-     * Returns all employees of the department.
-     * @return arraylist of employees of the department
-     */
-    public List<Employee> getEmployees() {
-        return employees;
-    }
 
-    /**
-     * Replaces the current employee list of the department with a new one.
-     * @param employees arraylist of employees
-     */
-    public void setEmployees(ArrayList<Employee> employees) {
-        this.employees = employees;
-    }
-
-    /**
-     * Returns the total amount of employees in the department.
-     * @return number of type int
-     */
-    public int countEmployees(){
-        return employees.size();
-    }
 
     @Override
     public String toString() {

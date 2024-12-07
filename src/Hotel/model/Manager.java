@@ -3,8 +3,8 @@ package Hotel.model;
 public class Manager extends Employee{
     private Integer managedDepartmentID;
 
-    public Manager(Integer id, String name, int salary, String password, Integer managedDepartment) {
-        super(id, name, salary, password);
+    public Manager(Integer id, String name, int salary, String password, int departmentId, Integer managedDepartment) {
+        super(id, name, salary, password, departmentId);
         this.managedDepartmentID = managedDepartment;
     }
 

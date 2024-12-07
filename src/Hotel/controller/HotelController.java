@@ -178,8 +178,12 @@ public class HotelController {
         sc.nextLine();
         System.out.println("Enter employee password: ");
         String password = sc.nextLine();
+        System.out.println("Enter employee department id: ");
+        int departmentId = sc.nextInt();
         String role = hotelService.getManagersManagedDepartmentType(managerId);
-        hotelService.createEmployee(role, name, salary, password);
+        sc.nextLine();
+
+        hotelService.createEmployee(role, name, salary, departmentId, password);
     }
 
     /**
@@ -221,16 +225,19 @@ public class HotelController {
             sc.nextLine();
             System.out.println("Enter employee password: ");
             String newPassword = sc.nextLine();
+            System.out.println("Enter department id");
+            int departmentId = sc.nextInt();
+            sc.nextLine();
 
             if (employeeType.equalsIgnoreCase("Manager")) {
                 System.out.println("Enter managed department Id:");
                 Integer newDepartmentId = sc.nextInt();
-                Employee employee = new Manager(id, newName, newSalary, newPassword, newDepartmentId);
+                Employee employee = new Manager(id, newName, newSalary, newPassword, departmentId, newDepartmentId);
                 hotelService.updateEmployee(employee);
             } else if (employeeType.equalsIgnoreCase("Cleaner")) {
                 System.out.println("Enter floor number:");
                 int newFloorNumber = sc.nextInt();
-                Employee employee = new Manager(id, newName, newSalary, newPassword, newFloorNumber);
+                Employee employee = new Manager(id, newName, newSalary, newPassword, departmentId, newFloorNumber);
                 hotelService.updateEmployee(employee);
             } else if (employeeType.equalsIgnoreCase("Receptionist")) {
                 ArrayList<String> newLanguages = new ArrayList<>();
@@ -241,7 +248,7 @@ public class HotelController {
                     language = sc.nextLine();
                     newLanguages.add(language);
                 }
-                Employee employee = new Receptionist(id, newName, newSalary, newPassword, newLanguages);
+                Employee employee = new Receptionist(id, newName, newSalary, newPassword, departmentId, newLanguages);
                 hotelService.updateEmployee(employee);
             }
 
@@ -250,15 +257,15 @@ public class HotelController {
 
     public void showAllEmployeesOnScreen(){
         System.out.println("\nCurrent list of employees:");
-        for (Employee employee : hotelService.showAllEmployees())
+        for (Employee employee : hotelService.getAllEmployees())
             System.out.println(employee.getId() + " " + employee.getName() + " " + employee.getSalary() + " " + employee.getPassword() + " " + employee);
     }
 
     public void showEmployeesSortedBySalary(Integer managerId){
         String managerType = hotelService.getManagersManagedDepartmentType(managerId);
-        Employee type = (managerType.equals("Receptionist")) ? new Receptionist(-1,"",0,"",null):
-                (managerType.equals("Cleaner")) ? new Cleaner(-1,"",0,"",-1):
-                        (managerType.equals("Manager")) ? new Manager(-1,"",0,"",null):
+        Employee type = (managerType.equals("Receptionist")) ? new Receptionist(-1,"",0,"",-1,null):
+                (managerType.equals("Cleaner")) ? new Cleaner(-1,"",0,"",-1, -1):
+                        (managerType.equals("Manager")) ? new Manager(-1,"",0,"",-1, null):
                                 null;  //daca e de tip department, vom sti ca type e null (nu putem asigna un object de tip Department la type pt ca type e de tip Employee
 
         System.out.println("\n\nEmployees sorted by salary:");
@@ -311,8 +318,7 @@ public class HotelController {
             Scanner sc = new Scanner(System.in);
             System.out.println("Enter a new department name: ");
             String departmentName = sc.nextLine();
-            List<Employee> employees = new ArrayList<>();
-            hotelService.createDepartment(departmentName, employees);
+            hotelService.createDepartment(departmentName);
 
         }else System.out.println("You are not authorised to do this");
     }
@@ -339,9 +345,8 @@ public class HotelController {
             sc.nextLine();
             System.out.println("Enter new department name: ");
             String departmentName = sc.nextLine();
-            List<Employee> emptyEmployeeList = new ArrayList<>();
 
-            Department updatedDepartment =new Department(departmentId, departmentName, emptyEmployeeList);
+            Department updatedDepartment =new Department(departmentId, departmentName);
             hotelService.updateDepartment(updatedDepartment);
 
         }else System.out.println("You are not authorised to do this");
@@ -370,4 +375,8 @@ public class HotelController {
 
     //-------------------------------------------
 
+
+    public List<Employee> getAllEmployees(){
+        return hotelService.getAllEmployees();
+    }
 }

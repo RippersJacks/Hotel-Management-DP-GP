@@ -1,8 +1,8 @@
 import Hotel.controller.HotelController;
 import Hotel.HotelRegistrationSystem;
+import Hotel.repository.DBRepository.*;
 import Hotel.repository.FileRepository;
 import Hotel.service.HotelService;
-import Hotel.model.*;
 import Hotel.repository.Repository;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +21,7 @@ public class Console {
 
     /**
      * Contains the User Interface of the User when he logs in and when he uses the project's functionality.
-     */
+    */
 
     private int takeUsersChoice() {
         Scanner sc = new Scanner(System.in);
@@ -33,7 +33,7 @@ public class Console {
 
 
     public void run() {
-        HotelRegistrationSystem system = new HotelRegistrationSystem(createEmployeeFileRepository());
+        HotelRegistrationSystem system = new HotelRegistrationSystem(hotelController);
 
         Scanner sc = new Scanner(System.in);
         System.out.println("Please enter your id: ");
@@ -184,27 +184,41 @@ public class Console {
 
 
     public static void main(String[] args) {
-        Console console = getConsole(createEmployeeFileRepository());
+
+        // Initialize the DB repositories
+        ReceptionistDBRepository receptionistDBRepository = new ReceptionistDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
+        RoomCustomerDBRepository roomCustomerDBRepository = new RoomCustomerDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
+        ManagerDBRepository managerDBRepository = new ManagerDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
+        DepartmentDBRepository departmentDBRepository = new DepartmentDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
+        CustomerDBRepository customerDBRepository = new CustomerDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
+        CleanerDBRepository cleanerDBRepository = new CleanerDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
+        RoomDBRepository roomDBRepository = new RoomDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
+
+        HotelService hotelService = new HotelService(receptionistDBRepository, roomCustomerDBRepository, managerDBRepository, departmentDBRepository, customerDBRepository, cleanerDBRepository, roomDBRepository);
+        HotelController hotelcontroller = new HotelController(hotelService);
+        Console console = new Console(hotelcontroller);
         console.run();
     }
 
 
-    private static Console getConsole(Repository<Employee> employeeRepository) {
+    /*private static Console getConsole(Repository<Employee> employeeRepository) {
         HotelService hotelService = new HotelService(createRoomFileRepository(), employeeRepository, createCustomerInFileRepository(), createDepartmentInFileRepository(), createRoomCustomerInFileRepository());
         HotelController hotelController = new HotelController(hotelService);
 
         return new Console(hotelController);
     }
 
+         */
+
 
     /**
      * Creates an in-memory repository for employees and populates it with some initial data.
      *
      * @return The in-memory repository for employees.
-     */
+    */
 
 
-    private static Repository<Employee> createEmployeeFileRepository() {
+    /*private static Repository<Employee> createEmployeeFileRepository() {
         Repository<Employee> employeeRepository = new FileRepository<>("employees.db");
         //Receptionists
         List<String> languageList = new ArrayList<>();
@@ -305,5 +319,6 @@ public class Console {
 
         return roomCustomerRepo;
     }
+     */
 }
 

@@ -17,6 +17,7 @@ public class RoomDBRepository extends DBRepository<Room> {
     @Override
     public void create(Room room){
         String sql = "Insert INTO \"Room\" (\"Id\", \"Floor\", \"Number\", \"Type\", \"PricePerNight\", \"Availability\") VALUES (?,?,?,?,?,?)";
+
         try(PreparedStatement statement = connection.prepareStatement(sql)){
             statement.setInt(1,room.getId());
             statement.setInt(2,room.getFloor());
@@ -28,10 +29,7 @@ public class RoomDBRepository extends DBRepository<Room> {
         }catch (SQLException e){
             throw new RuntimeException(e);
         }
-
-
     }
-
 
     @Override
     public Room get(Integer id){
@@ -61,7 +59,7 @@ public class RoomDBRepository extends DBRepository<Room> {
             statement.setString(3, room.getType());
             statement.setInt(4, room.getPricePerNight());
             statement.setString(5, room.getAvailability());
-            statement.setInt(5, room.getId());
+            statement.setInt(6, room.getId());
 
             statement.execute();
         }catch (SQLException e){
