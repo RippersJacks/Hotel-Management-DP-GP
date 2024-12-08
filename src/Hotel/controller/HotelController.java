@@ -5,6 +5,7 @@ import Hotel.service.HotelService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class HotelController {
@@ -46,7 +47,7 @@ public class HotelController {
         boolean roomExists = hotelService.cleanRoom(roomID);
 
         if (roomExists) System.out.println("Room " + roomID + " cleaned");
-            else System.out.println("Room " + roomID + " uncleanable or doesnt exist");
+            else throw new IllegalArgumentException("Room " + roomID + " uncleanable or doesnt exist");
     }
     //-------------------------------------------
 
@@ -60,14 +61,28 @@ public class HotelController {
      */
     public void createClientValidate(){
         Scanner sc = new Scanner(System.in);
+
         System.out.println("Enter customer name: ");
         String name = sc.nextLine();
+        if (name.isEmpty())
+            throw new IllegalArgumentException ("Customer name cannot be empty");
+
         System.out.println("Enter desired room type: ");
         String roomType = sc.nextLine();
-        System.out.println("Enter check-in date: ");
+        if (!roomType.equals("Twin Room") && !roomType.equals("Queen Room") && !roomType.equals("Suite") && !roomType.equals("Single Room"))
+            throw new IllegalArgumentException("Room type must be one of the following: Twin Room, Queen Room, Suite, Single Room");
+
+        String datePattern = "^(\\d{4})-(\\d{2})-(\\d{2})$";
+        System.out.println("Enter check-in date (Format: YYYY-MM-DD): ");
         String checkInDate = sc.nextLine();
+        if (!checkInDate.matches(datePattern))
+            throw new IllegalArgumentException("Check-in date must be in the format YYYY-MM-DD");
+
         System.out.println("Enter check-out date: ");
         String checkOutDate = sc.nextLine();
+        if (!checkOutDate.matches(datePattern))
+            throw new IllegalArgumentException("Check-out date must be in the format YYYY-MM-DD");
+
 
         for (Room room: hotelService.getAvailableRooms()){
             if (room.getType().equals(roomType)){
@@ -76,7 +91,7 @@ public class HotelController {
                 hotelService.createClient(name, roomId, checkInDate, checkOutDate);
                 break;
             }
-            System.out.println("No available rooms left of this type");
+            throw new IllegalArgumentException("No available rooms left of this type");
         }
 
     }
@@ -88,6 +103,22 @@ public class HotelController {
         Scanner sc = new Scanner(System.in);
         System.out.println("Enter customer id to be deleted: ");
         int id = sc.nextInt();
+        sc.nextLine();
+
+        //---Exceptions
+        if (id < 0)
+            throw new IllegalArgumentException ("Customer id cannot be negative");
+
+        int ok = 0;
+        for (Customer customer: hotelService.getAllCustomers())
+            if (customer.getId() == id) {
+                ok = 1;
+                break;
+            }
+        if (ok == 0)
+            throw new IllegalArgumentException("Customer id " + id + " does not exist");
+        //---
+
         hotelService.deleteClient(id);
         hotelService.deleteRoomCustomer(id);
     }
@@ -103,6 +134,24 @@ public class HotelController {
 
         System.out.println("New customer name: ");
         String name = sc.nextLine();
+
+
+        //---Exceptions
+        if (id < 0)
+            throw new IllegalArgumentException ("Customer id cannot be negative");
+
+        int ok = 0;
+        for (Customer customer: hotelService.getAllCustomers())
+            if (Objects.equals(customer.getId(), id)) {
+                ok = 1;
+                break;
+            }
+        if (ok == 0)
+            throw new IllegalArgumentException("Customer id " + id + " does not exist");
+
+        if (name.isEmpty())
+            throw new IllegalArgumentException ("Customer name cannot be empty");
+        //---
 
         Customer customer = new Customer(id, name);
         hotelService.updateClient(customer);
@@ -130,7 +179,7 @@ public class HotelController {
     }
 
     /**
-     * Shows a sorted list of RoomCustomer objects (sorted by hotelService)
+     * Shows a sorted list of RoomCustomer objects. Sorting is made using the customer's Checkout Dates.
      */
     public void showInOrderUntilWhenCustomersStayInRoom(){
         System.out.println();
@@ -151,6 +200,20 @@ public class HotelController {
         System.out.println("Enter customer id: ");
         int customerID = sc.nextInt();
         sc.nextLine();
+
+        //---Exceptions
+        if (customerID < 0)
+            throw new IllegalArgumentException ("Customer id cannot be negative");
+
+        int ok = 0;
+        for (Customer customer: hotelService.getAllCustomers())
+            if (Objects.equals(customer.getId(), customerID)) {
+                ok = 1;
+                break;
+            }
+        if (ok == 0)
+            throw new IllegalArgumentException("Customer id " + customerID + " does not exist");
+        //---
 
         List<Room> roomList = hotelService.getAllRoomsOfACustomer(customerID);
 
@@ -173,15 +236,27 @@ public class HotelController {
         Scanner sc = new Scanner(System.in);
         System.out.println("Enter employee name: ");
         String name = sc.nextLine();
+        if (name.isEmpty())
+            throw new IllegalArgumentException("Employee name cannot be empty");
+
         System.out.println("Enter employee salary: ");
         int salary = sc.nextInt();
         sc.nextLine();
+        if (salary < 0)
+            throw new IllegalArgumentException("Employee salary cannot be negative");
+
         System.out.println("Enter employee password: ");
         String password = sc.nextLine();
+        if (password.isEmpty())
+            throw new IllegalArgumentException("Employee password cannot be empty");
+
         System.out.println("Enter employee department id: ");
         int departmentId = sc.nextInt();
-        String role = hotelService.getManagersManagedDepartmentType(managerId);
         sc.nextLine();
+        if (departmentId < 0)
+            throw new IllegalArgumentException("Employee department id cannot be negative");
+
+        String role = hotelService.getManagersManagedDepartmentType(managerId);
 
         hotelService.createEmployee(role, name, salary, departmentId, password);
     }
@@ -195,11 +270,14 @@ public class HotelController {
         Scanner sc = new Scanner(System.in);
         System.out.println("Enter employee id to be deleted: ");
         int id = sc.nextInt();
+        if (id < 0)
+            throw new IllegalArgumentException ("Employee id cannot be negative");
+
         if (hotelService.getEmployeeTypeString(id).equals(hotelService.getManagersManagedDepartmentType(managerId))) {
             hotelService.deleteEmployee(id);
             System.out.println("Employee successfully deleted");
         }
-        else System.out.println("The given id is not valid for your department");
+        else throw new IllegalArgumentException("The given id does not exist in your department");
     }
 
     /**
@@ -213,6 +291,8 @@ public class HotelController {
         System.out.println("Enter employee id to be updated: ");
         Integer id = sc.nextInt();
         sc.nextLine();
+        if (id < 0)
+            throw new IllegalArgumentException ("Employee id cannot be negative");
 
         String employeeType = hotelService.getEmployeeTypeString(id);
         String managerType = hotelService.getManagersManagedDepartmentType(managerId);
@@ -220,39 +300,73 @@ public class HotelController {
         if (employeeType.equals(managerType)) {
             System.out.println("Enter employee name: ");
             String newName = sc.nextLine();
+            if (newName.isEmpty())
+                throw new IllegalArgumentException("Employee name cannot be empty");
+
             System.out.println("Enter employee salary: ");
             int newSalary = sc.nextInt();
             sc.nextLine();
+            if (newSalary < 0)
+                throw new IllegalArgumentException("Employee salary cannot be negative");
+
             System.out.println("Enter employee password: ");
             String newPassword = sc.nextLine();
+            if (newPassword.isEmpty())
+                throw new IllegalArgumentException("Employee password cannot be empty");
+
             System.out.println("Enter department id");
             int departmentId = sc.nextInt();
             sc.nextLine();
+            if (departmentId < 0)
+                throw new IllegalArgumentException("Employee department id cannot be negative");
 
             if (employeeType.equalsIgnoreCase("Manager")) {
                 System.out.println("Enter managed department Id:");
                 Integer newDepartmentId = sc.nextInt();
+                sc.nextLine();
+
+                //---Exceptions
+                if (newDepartmentId < 0)
+                    throw new IllegalArgumentException("Employee department id cannot be negative");
+                int ok = 0;
+                for (Department department: hotelService.getAllDepartments())
+                    if (department.getId().equals(newDepartmentId)) {
+                        ok = 1;
+                        break;
+                    }
+                if (ok == 0)
+                    throw new IllegalArgumentException("Department id " + newDepartmentId + " does not exist");
+                //---
+
                 Employee employee = new Manager(id, newName, newSalary, newPassword, departmentId, newDepartmentId);
                 hotelService.updateEmployee(employee);
-            } else if (employeeType.equalsIgnoreCase("Cleaner")) {
+            }
+            else if (employeeType.equalsIgnoreCase("Cleaner")) {
                 System.out.println("Enter floor number:");
                 int newFloorNumber = sc.nextInt();
+                sc.nextLine();
+
                 Employee employee = new Manager(id, newName, newSalary, newPassword, departmentId, newFloorNumber);
                 hotelService.updateEmployee(employee);
-            } else if (employeeType.equalsIgnoreCase("Receptionist")) {
+            }
+            else if (employeeType.equalsIgnoreCase("Receptionist")) {
                 ArrayList<String> newLanguages = new ArrayList<>();
                 String language = " ";
 
                 while (!language.equalsIgnoreCase("stop")) {         //when the user types "stop" the language adding stops
                     System.out.println("Enter a language: ");
                     language = sc.nextLine();
+                    if (language.isEmpty())
+                        throw new IllegalArgumentException("Language cannot be empty");
+
                     newLanguages.add(language);
                 }
+
                 Employee employee = new Receptionist(id, newName, newSalary, newPassword, departmentId, newLanguages);
                 hotelService.updateEmployee(employee);
             }
 
-        }else System.out.println("Wrong department");
+        }else throw new IllegalArgumentException("The given id does not exist in your department");
     }
 
     public void showAllEmployeesOnScreen(){
@@ -318,6 +432,9 @@ public class HotelController {
             Scanner sc = new Scanner(System.in);
             System.out.println("Enter a new department name: ");
             String departmentName = sc.nextLine();
+            if (departmentName.isEmpty())
+                throw new IllegalArgumentException("Department name cannot be empty");
+
             hotelService.createDepartment(departmentName);
 
         }else System.out.println("You are not authorised to do this");
@@ -328,7 +445,24 @@ public class HotelController {
         if (managerOverDepartments(id)){
             Scanner sc = new Scanner(System.in);
             System.out.println("Enter the id of the department you want to delete: ");
-            hotelService.deleteDepartment(sc.nextInt());
+            int departmentId = sc.nextInt();
+
+            //---Exceptions
+            if (departmentId < 0)
+                throw new IllegalArgumentException("Department id cannot be negative");
+
+            int ok = 0;
+            for (Department department : hotelService.getAllDepartments())
+                if (department.getId().equals(departmentId)) {
+                    ok = 1;
+                    break;
+                }
+            if (ok==0)
+                throw new IllegalArgumentException("Department id " + departmentId + " does not exist");
+            //---
+
+            hotelService.deleteDepartment(departmentId);
+            sc.nextLine();
 
         }else System.out.println("You are not authorised to do this");
     }
@@ -343,13 +477,30 @@ public class HotelController {
             System.out.println("Enter a department id to be updated: ");
             int departmentId = sc.nextInt();
             sc.nextLine();
+
+            //---Exceptions
+            if (departmentId < 0)
+                throw new IllegalArgumentException("Department id cannot be negative");
+
+            int ok = 0;
+            for (Department department : hotelService.getAllDepartments())
+                if (department.getId().equals(departmentId)) {
+                    ok = 1;
+                    break;
+                }
+            if (ok==0)
+                throw new IllegalArgumentException("Department id " + departmentId + " does not exist");
+            //---
+
             System.out.println("Enter new department name: ");
             String departmentName = sc.nextLine();
+            if (departmentName.isEmpty())
+                throw new IllegalArgumentException("Department name cannot be empty");
 
             Department updatedDepartment =new Department(departmentId, departmentName);
             hotelService.updateDepartment(updatedDepartment);
 
-        }else System.out.println("You are not authorised to do this");
+        }else throw new IllegalArgumentException("You are not authorised to do this (not a manager over departments)");
     }
 
     /**
@@ -361,6 +512,8 @@ public class HotelController {
         Scanner sc = new Scanner(System.in);
         int minAvgSalary = sc.nextInt();
         sc.nextLine();
+        if (minAvgSalary < 0)
+            throw new IllegalArgumentException("Minimum average salary cannot be negative");
 
         System.out.println("\nDepartments with an average salary of over " + minAvgSalary +":");
 
@@ -370,7 +523,7 @@ public class HotelController {
                 System.out.println(hotelService.getAvgSalaryOfADepartment(department) + " for " + department);
         }
         else
-            System.out.println("You do not have access to this functionality");
+            throw new IllegalArgumentException("You do not have access to this functionality (not a manager over departments)");
     }
 
     //-------------------------------------------

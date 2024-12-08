@@ -170,6 +170,8 @@ public class Console {
                         System.out.println("Write the id of the cleaned room:");
                         int roomId = sc.nextInt();
                         sc.nextLine();
+                        if (roomId < 0)
+                            throw new IllegalArgumentException("Invalid room ID: cannot be negative");
                         hotelController.cleanRoomValidate(roomId);
                         break;
                 }

@@ -55,6 +55,7 @@ public class HotelService{
      */
     public List<Room> checkDirtyRooms(){
         List<Room> roomList = roomDBRepository.getAll();
+        if (roomList.isEmpty()){throw new NullPointerException("No rooms exist");}
         List<Room> dirtyRoomList = new ArrayList<>();
 
         Cleaner cleanerFunction = new Cleaner(0,"",0,"",0,0); //just for the use of the checkRoom function which is located in the Cleaner class
@@ -77,7 +78,7 @@ public class HotelService{
      * @param roomID Integer object representing the ID of the room to be cleaned
      * @return true or false
      */
-    public boolean cleanRoom(Integer roomID){  //TO-DO: update repo with new value
+    public boolean cleanRoom(Integer roomID){
         List<Room> roomList = roomDBRepository.getAll();
         Room targetRoom = null;
 
@@ -243,6 +244,7 @@ public class HotelService{
         if (type.equalsIgnoreCase("Cleaner")) {             //Checks what type of employee we add ignoring the case
             System.out.println("Enter employee floor: ");
             int floor = sc.nextInt();
+            sc.nextLine();
 
             Cleaner employee = new Cleaner(id, name, salary, password, departmentId, floor);
             cleanerDBRepository.create(employee);
@@ -254,6 +256,8 @@ public class HotelService{
             while (!language.equalsIgnoreCase("stop")){
                 System.out.println("Enter a language: ");
                 language = sc.nextLine();
+                if (language.isEmpty())
+                    throw new NullPointerException("Language cannot be empty");
                 languages.add(language);
             }
             Receptionist employee = new Receptionist(id, name, salary, password, departmentId, languages);
@@ -262,6 +266,10 @@ public class HotelService{
         else if (type.equalsIgnoreCase("Manager")){
             System.out.println("Enter department id: ");
             int managerdepartmentId = sc.nextInt();
+            sc.nextLine();
+            if (departmentId < 0)
+                throw new NullPointerException("Department id cannot be empty");
+
             Manager employee = new Manager(id, name, salary, password, departmentId ,managerdepartmentId);
             managerDBRepository.create(employee);
         }
@@ -389,6 +397,9 @@ public class HotelService{
 
     public void updateDepartment(Department department) {departmentDBRepository.update(department);}
 
+    public List<Department> getAllDepartments(){
+        return departmentDBRepository.getAll();
+    }
 
     public List<? extends Employee> getDepartmentEmployees(int id) {
         if (id == managerDBRepository.getAll().getFirst().getId()){
