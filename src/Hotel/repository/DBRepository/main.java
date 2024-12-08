@@ -31,11 +31,11 @@ public class main {
         ManagerDBRepository managerDBRepository = new ManagerDBRepository("jdbc:postgresql://localhost/HotelManagement", "postgres", "User");
         RoomCustomerDBRepository roomCustomerDBRepository = new RoomCustomerDBRepository("jdbc:postgresql://localhost/HotelManagement", "postgres", "User");
 
-        //roomDBRepository.create(room);
-        //customerBDRepository.create(customer);
-        //cleanerDBRepository.create(cleaner);
-        //receptionistDBRepository.create(receptionist);
-        //managerDBRepository.create(manager);
-        //roomCustomerDBRepository.create(roomCustomer);
+        roomDBRepository.create(room);
+        customerBDRepository.create(customer);
+        cleanerDBRepository.create(cleaner);
+        receptionistDBRepository.create(receptionist);
+        managerDBRepository.create(manager);
+        roomCustomerDBRepository.create(roomCustomer);
     }
 }
