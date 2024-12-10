@@ -80,7 +80,6 @@ public class HotelService{
      */
     public boolean cleanRoom(Integer roomID){
         List<Room> roomList = roomDBRepository.getAll();
-        Room targetRoom = null;
 
         for (Room room : roomList) {
             if (room.getId().equals(roomID))
@@ -119,6 +118,10 @@ public class HotelService{
         for (Customer customer : customerList) {if (id < customer.getId()) id = customer.getId();}
         id += 1;
 
+        if (roomId < 0)
+            throw new NullPointerException("Room id cant be negative");
+
+
         Customer client = new Customer(id, name);
         this.createRoomCustomer(id, roomId, checkInDate, checkOutDate);
         customerDBRepository.create(client);
@@ -151,7 +154,9 @@ public class HotelService{
      * Updates a customer in the customer database.
      * @param client object of type Customer, a.k.a. the customer to be updated
      */
-    public void updateClient(Customer client) {customerDBRepository.update(client);}
+    public void updateClient(Customer client) {
+        customerDBRepository.update(client);
+    }
 
     /**
      * Returns a list containing all customers.
@@ -484,4 +489,31 @@ public class HotelService{
 
     public void updateRoomCustomer(RoomCustomer roomCustomer) {roomCustomerDBRepository.update(roomCustomer);}
     //--------------------------------------------------
+
+
+
+    //------ROOM MANAGEMENT------
+    //--> only used for tests
+
+    public void createRoom(int id, int floor, int number, String type, int pricePerNight, String availability){
+        roomDBRepository.create(new Room(id, floor, number, type, pricePerNight, availability));
+    }
+
+    public void deleteRoom(int id) {
+        roomDBRepository.delete(id);
+    }
+
+    public void updateRoom(int id, int floor, int number, String type, int pricePerNight, String availability) {
+        roomDBRepository.update(new Room(id, floor, number, type, pricePerNight, availability));
+    }
+
+    public Room getRoom(int id){
+        return roomDBRepository.get(id);
+    }
+
+    public List<Room> getAllRooms(){
+        return roomDBRepository.getAll();
+    }
 }
+
+
