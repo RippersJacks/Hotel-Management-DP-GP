@@ -71,7 +71,7 @@ public class HotelService{
      * Uses a given ID parameter to find a room and change its availability from "Dirty" to "Available".
      * <p>
      * If the given room has been found and can be cleaned, true is returned.
-     * If it doesnt exist, or exists but is of availability Available or Unavailable, false is returned.
+     * If it doesnt exist, or exists but is of availability Available or Unavailable, an exception is thrown.
      * <p>
      * Availability of given room must be "Dirty" in order for it to be cleaned.
      *
@@ -91,10 +91,10 @@ public class HotelService{
                     return true;
                 }
                 else
-                    return false;
+                    throw new IllegalArgumentException("Room is currently occupied, cannot clean");
             }
         }
-        return false;
+        throw new IllegalArgumentException("Room does not exist");
     }
     //--------------------------------------------------
 
@@ -327,12 +327,6 @@ public class HotelService{
                 }
             }
         }
-        return null;
-    }
-    public Employee getEmployeeTypeObject(int id){
-        for (Employee employee : getAllEmployees())
-            if (employee.getId() == id)
-                return employee;
         return null;
     }
 
