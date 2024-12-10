@@ -19,6 +19,8 @@ dependencies {
 
     // Optional: Logging library for better debug messages
     implementation 'org.slf4j:slf4j-simple:2.0.9'
+
+    implementation 'org.junit.jupiter:junit-jupiter:5.11.0-M1'
 }
 
 test {
