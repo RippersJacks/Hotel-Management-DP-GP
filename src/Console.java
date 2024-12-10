@@ -32,15 +32,19 @@ public class Console {
     }
 
 
-    public void run() {
+    public void run(int attemptCount) {
         HotelRegistrationSystem system = new HotelRegistrationSystem(hotelController);
 
         Scanner sc = new Scanner(System.in);
         System.out.println("Please enter your id: ");
         int id = sc.nextInt();
         sc.nextLine();
+        if (id < 0)
+            throw new IllegalArgumentException("Invalid hotel id: can't be negative");
         System.out.println("Please enter your password: ");
         String password = sc.nextLine();
+        if (password.isEmpty())
+            throw new IllegalArgumentException("Invalid hotel password: can't be empty");
 
         String role = system.login(id, password);
 
@@ -62,7 +66,7 @@ public class Console {
 
                 int choice = takeUsersChoice();
                 if (choice == 0) {
-                    run();
+                    run(0);
                     break;
                 }
                 if (choice == 8) break;
@@ -110,7 +114,7 @@ public class Console {
 
                 int choice = takeUsersChoice();
                 if (choice == 0) {
-                    run();
+                    run(0);
                     break;
                 }
                 if (choice == 11) break;
@@ -158,7 +162,7 @@ public class Console {
 
                 int choice = takeUsersChoice();
                 if (choice == 0) {
-                    run();
+                    run(0);
                     break;
                 }
                 if (choice == 3) break;
@@ -177,7 +181,10 @@ public class Console {
                 }
             } else {
                 System.out.println("The information you entered can't be found in the database.");
-                run();
+                attemptCount++;
+                if (attemptCount >= 3)
+                    throw new RuntimeException("Reached 3 attempts, please wait before logging in again.");
+                run(attemptCount);
                 break;
             }
 
@@ -199,7 +206,7 @@ public class Console {
         HotelService hotelService = new HotelService(receptionistDBRepository, roomCustomerDBRepository, managerDBRepository, departmentDBRepository, customerDBRepository, cleanerDBRepository, roomDBRepository);
         HotelController hotelcontroller = new HotelController(hotelService);
         Console console = new Console(hotelcontroller);
-        console.run();
+        console.run(0);
     }
 
 
