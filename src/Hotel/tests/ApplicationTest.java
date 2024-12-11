@@ -12,7 +12,7 @@ import java.util.Objects;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class HotelServiceTest {
+class ApplicationTest {
 
     HotelService hotelService;
     ReceptionistDBRepository receptionistDBRepository;
@@ -24,7 +24,7 @@ class HotelServiceTest {
     RoomDBRepository roomDBRepository;
     RoomCleanerDBRepository roomCleanerDBRepository;
 
-    public HotelServiceTest() {
+    public ApplicationTest() {
         receptionistDBRepository = new ReceptionistDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
         roomCustomerDBRepository = new RoomCustomerDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
         managerDBRepository = new ManagerDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
