@@ -9,21 +9,31 @@ import java.util.List;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class HotelServiceTest {
 
     HotelService hotelService;
+    ReceptionistDBRepository receptionistDBRepository;
+    RoomCustomerDBRepository roomCustomerDBRepository;
+    ManagerDBRepository managerDBRepository;
+    DepartmentDBRepository departmentDBRepository;
+    CustomerDBRepository customerDBRepository;
+    CleanerDBRepository cleanerDBRepository;
+    RoomDBRepository roomDBRepository;
+    RoomCleanerDBRepository roomCleanerDBRepository;
 
     public HotelServiceTest() {
-        ReceptionistDBRepository receptionistDBRepository = new ReceptionistDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
-        RoomCustomerDBRepository roomCustomerDBRepository = new RoomCustomerDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
-        ManagerDBRepository managerDBRepository = new ManagerDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
-        DepartmentDBRepository departmentDBRepository = new DepartmentDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
-        CustomerDBRepository customerDBRepository = new CustomerDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
-        CleanerDBRepository cleanerDBRepository = new CleanerDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
-        RoomDBRepository roomDBRepository = new RoomDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
+        receptionistDBRepository = new ReceptionistDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
+        roomCustomerDBRepository = new RoomCustomerDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
+        managerDBRepository = new ManagerDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
+        departmentDBRepository = new DepartmentDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
+        customerDBRepository = new CustomerDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
+        cleanerDBRepository = new CleanerDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
+        roomDBRepository = new RoomDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
+        roomCleanerDBRepository = new RoomCleanerDBRepository("jdbc:postgresql://localhost/HotelManagement", "postgres", "User");
 
-        hotelService = new HotelService(receptionistDBRepository, roomCustomerDBRepository, managerDBRepository, departmentDBRepository, customerDBRepository, cleanerDBRepository, roomDBRepository);
+        hotelService = new HotelService(receptionistDBRepository, roomCustomerDBRepository, managerDBRepository, departmentDBRepository, customerDBRepository, cleanerDBRepository, roomDBRepository, roomCleanerDBRepository);
     }
 
     @Test
@@ -41,22 +51,58 @@ class HotelServiceTest {
 
     @Test
     void cleanRoom() {
-        hotelService.createRoom(-1,-1,-1,"Single Room", -1, "Dirty");
+        hotelService.createRoom(-1,4,-1,"Single Room", -1, "Dirty");
+        hotelService.createRoomCleaner(4,4);
 
-        int ok = 0;
+        //---check that cleanRoom works
+        hotelService.cleanRoom(4,-1);
+
+        int ok = 1;
         for (Room room: hotelService.checkDirtyRooms())
             if (room.getId() == -1)
-                ok = 1;
+                ok = 0;
+        hotelService.deleteRoom(-1);
+
+        int id = 0;
+        for (RoomCleaner roomCleaner: roomCleanerDBRepository.getAll())
+            if (id < roomCleaner.getId())
+                id = roomCleaner.getId();
+        roomCleanerDBRepository.delete(id);
 
         assertEquals(ok, 1);
 
 
-        hotelService.cleanRoom(-1);
-        for (Room room: hotelService.checkDirtyRooms())
-            if (room.getId() == -1)
-                ok = 0;
+        //---check that cleanRoom throws exception for wrong assigned floor
+        hotelService.createRoom(-1,3,-1,"Single Room", -1, "Dirty"); //create a room on floor 3
+        hotelService.createRoomCleaner(4,4);  //assign all rooms of floor 4 to Cleaner
+        assertThrows(RuntimeException.class, () -> hotelService.cleanRoom(4,-1));  //tries to clean a floor different than 4
 
         hotelService.deleteRoom(-1);
+        roomCleanerDBRepository.delete(id);
+    }
+
+
+
+    @Test
+    void createRoomCleaner() {
+        roomDBRepository.create(new Room(-1,-50,-1,"Single Room", -1, "Available"));
+        cleanerDBRepository.create(new Cleaner(-2,"Papa",20,"papspdwpapwd",2,-50));
+        hotelService.createRoomCleaner(-2,-50);
+
+        int ok = 0;
+        int id=0;
+        for (RoomCleaner roomCleaner: roomCleanerDBRepository.getAll())
+            if (roomCleaner.getCleanerId() == -2 && roomCleaner.getRoomId() == -1)
+            {
+                ok = 1;
+                id = roomCleaner.getId();
+                break;
+            }
+
+        roomCleanerDBRepository.delete(id);
+        roomDBRepository.delete(-1);
+        cleanerDBRepository.delete(-2);
+
         assertEquals(ok, 1);
     }
 
@@ -108,36 +154,35 @@ class HotelServiceTest {
         assertEquals(ok, 1);
     }
 
-//    @Test
-//    void updateClient() {    //nu merge updateClient (problema in repository)
-//        hotelService.createRoom(1973,-1,-1,"Single Room",-1,"Available");
-//        hotelService.createClient("TestSubject123",1973,"2024-11-21","2024-11-28");
-//
-//        int ok = 0;
-//        int id = 0;
-//        for (Customer customer: hotelService.getAllCustomers())
-//            if (customer.getName().equals("TestSubject123")) {
-//                ok = 1;
-//                id = customer.getId();
-//                break;
-//            }
-//        assertEquals(ok, 1);
-//
-//        Customer client = new Customer(id,"TestedDeadSubject123");
-//        hotelService.updateClient(client);
-//        System.out.println(hotelService.getAllCustomers());
-//
-//        for (Customer customer: hotelService.getAllCustomers())
-//            if (customer.getName().equals("TestedDeadSubject123")){
-//                ok = 2;
-//                break;
-//            }
-//
-//        hotelService.deleteClient(id);
-//        hotelService.deleteRoom(1973);
-//
-//        assertEquals(ok, 2);
-//    }
+    @Test
+    void updateClient() {
+        hotelService.createRoom(1973,-1,-1,"Single Room",-1,"Available");
+        hotelService.createClient("TestSubject123",1973,"2024-11-21","2024-11-28");
+
+        int ok = 0;
+        int id = 0;
+        for (Customer customer: hotelService.getAllCustomers())
+            if (customer.getName().equals("TestSubject123")) {
+                ok = 1;
+                id = customer.getId();
+                break;
+            }
+        assertEquals(ok, 1);
+
+        Customer client = new Customer(id,"TestedDeadSubject123");
+        hotelService.updateClient(client);
+
+        for (Customer customer: hotelService.getAllCustomers())
+            if (customer.getName().equals("TestedDeadSubject123")){
+                ok = 2;
+                break;
+            }
+
+        hotelService.deleteClient(id);
+        hotelService.deleteRoom(1973);
+
+        assertEquals(ok, 2);
+    }
 
     @Test
     void getAllCustomers() {
