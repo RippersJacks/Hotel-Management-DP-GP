@@ -112,6 +112,8 @@ public class HotelService{
     //---------------ROOM CLEANER SECTION--------------
 
     public List<RoomCleaner> getAllRoomCleaners(){
+        if (roomCleanerDBRepository.getAll().isEmpty())
+            throw new RuntimeException("No RoomCleaner relations exist");
         return roomCleanerDBRepository.getAll();
     }
 
@@ -120,11 +122,12 @@ public class HotelService{
             if (room.getFloor() == floor)
             {
                 int id = 0;
-                for (RoomCleaner roomCleaner: getAllRoomCleaners())
-                {
-                    if (id < roomCleaner.getId())
-                        id = roomCleaner.getId();
-                }
+                if (!roomCleanerDBRepository.getAll().isEmpty())
+                    for (RoomCleaner roomCleaner: getAllRoomCleaners())
+                    {
+                        if (id < roomCleaner.getId())
+                            id = roomCleaner.getId();
+                    }
                 id += 1;
 
                 roomCleanerDBRepository.create(new RoomCleaner(id,room.getId(),cleanerId));
