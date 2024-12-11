@@ -5,6 +5,7 @@ import Hotel.repository.DBRepository.*;
 import Hotel.service.HotelService;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -52,10 +53,10 @@ class HotelServiceTest {
     @Test
     void cleanRoom() {
         hotelService.createRoom(-1,4,-1,"Single Room", -1, "Dirty");
-        hotelService.createRoomCleaner(4,4);
+        hotelService.createRoomCleaner(6972,4);
 
         //---check that cleanRoom works
-        hotelService.cleanRoom(4,-1);
+        hotelService.cleanRoom(6972,-1);
 
         int ok = 1;
         for (Room room: hotelService.checkDirtyRooms())
@@ -74,14 +75,25 @@ class HotelServiceTest {
 
         //---check that cleanRoom throws exception for wrong assigned floor
         hotelService.createRoom(-1,3,-1,"Single Room", -1, "Dirty"); //create a room on floor 3
-        hotelService.createRoomCleaner(4,4);  //assign all rooms of floor 4 to Cleaner
+        hotelService.createRoomCleaner(6972,4);  //assign all rooms of floor 4 to Cleaner
         assertThrows(RuntimeException.class, () -> hotelService.cleanRoom(4,-1));  //tries to clean a floor different than 4
 
         hotelService.deleteRoom(-1);
         roomCleanerDBRepository.delete(id);
     }
 
+    @Test
+    void getAllRoomCleaners(){
+        ArrayList<RoomCleaner> oldList = new ArrayList<>(roomCleanerDBRepository.getAll());
 
+        for (RoomCleaner roomCleaner: roomCleanerDBRepository.getAll())
+            roomCleanerDBRepository.delete(roomCleaner.getId());
+
+        assertThrows(RuntimeException.class, () -> hotelService.getAllRoomCleaners());
+
+        for (RoomCleaner roomCleaner: oldList)
+            roomCleanerDBRepository.create(roomCleaner);
+    }
 
     @Test
     void createRoomCleaner() {
@@ -210,6 +222,15 @@ class HotelServiceTest {
     }
 
     @Test
+    void sortRoomCustomerByUntilDate(){
+        ArrayList<RoomCustomer> sortedList = new ArrayList<>(hotelService.sortRoomCustomerByUntilDate());
+
+        for (int i=0;i<sortedList.size()-1;i++)
+            for (int j=i+1;j<sortedList.size();j++)
+                assert sortedList.get(i).getUntilDate().compareTo(sortedList.get(j).getUntilDate()) <= 0;
+    }
+
+    @Test
     void getAllRoomsOfACustomer() {
         hotelService.createRoom(1973,-1,-1,"Single Room",-1,"Available");
         hotelService.createClient("TestSubject123",1973,"2024-11-21","2024-11-28");
@@ -225,7 +246,6 @@ class HotelServiceTest {
 
         assertEquals(roomList.getFirst().getId(), 1973);
     }
-
 
     @Test
     void getEmployeeTypeString() {
