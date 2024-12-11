@@ -42,9 +42,9 @@ public class HotelController {
      * Checks if the room with given ID parameter exists, and changes its availability to "Available" if it was "Dirty" before.
      * @param roomID ID of the room to be cleaned.
      */
-    public void cleanRoomValidate(int roomID){
+    public void cleanRoomValidate(int cleanerId,int roomID){
         //the cleanRoom function cleans the room and also returns true if this room has been found; else false
-        boolean roomExists = hotelService.cleanRoom(roomID);
+        boolean roomExists = hotelService.cleanRoom(cleanerId, roomID);
 
         if (roomExists) System.out.println("Room " + roomID + " cleaned");
             else throw new IllegalArgumentException("Room " + roomID + " uncleanable or doesnt exist");
@@ -250,15 +250,15 @@ public class HotelController {
         if (password.isEmpty())
             throw new IllegalArgumentException("Employee password cannot be empty");
 
-        System.out.println("Enter employee department id: ");
-        int departmentId = sc.nextInt();
-        sc.nextLine();
-        if (departmentId < 0)
-            throw new IllegalArgumentException("Employee department id cannot be negative");
+//        System.out.println("Enter employee department id: ");
+//        int departmentId = sc.nextInt();
+//        sc.nextLine();
+//        if (departmentId < 0)
+//            throw new IllegalArgumentException("Employee department id cannot be negative");
 
         String role = hotelService.getManagersManagedDepartmentType(managerId);
 
-        hotelService.createEmployee(role, name, salary, departmentId, password);
+        hotelService.createEmployee(role, name, salary, password);
     }
 
     /**

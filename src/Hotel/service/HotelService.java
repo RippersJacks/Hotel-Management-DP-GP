@@ -22,6 +22,7 @@ public class HotelService{
     private final CustomerDBRepository customerDBRepository;
     private final CleanerDBRepository cleanerDBRepository;
     private final RoomDBRepository roomDBRepository;
+    private final RoomCleanerDBRepository roomCleanerDBRepository;
 
     /**
      * Contains the functionality of the project and works with the repositories.
@@ -31,7 +32,7 @@ public class HotelService{
      * @param departmentDBRepository repository with objects of type Department
      * @param roomCustomerDBRepository repository with objects of type RoomCustomer (crossing table for Room & Customer)
      */
-    public HotelService( ReceptionistDBRepository receptionistDBRepository, RoomCustomerDBRepository roomCustomerDBRepository, ManagerDBRepository managerDBRepository, DepartmentDBRepository departmentDBRepository, CustomerDBRepository customerDBRepository, CleanerDBRepository cleanerDBRepository, RoomDBRepository roomDBRepository) {
+    public HotelService( ReceptionistDBRepository receptionistDBRepository, RoomCustomerDBRepository roomCustomerDBRepository, ManagerDBRepository managerDBRepository, DepartmentDBRepository departmentDBRepository, CustomerDBRepository customerDBRepository, CleanerDBRepository cleanerDBRepository, RoomDBRepository roomDBRepository, RoomCleanerDBRepository roomCleanerDBRepository) {
         //this.roomRepository = roomRepository;
         //this.employeeRepository = employeeRepository;
         //this.customerRepository = customerRepository;
@@ -44,6 +45,7 @@ public class HotelService{
         this.customerDBRepository = customerDBRepository;
         this.cleanerDBRepository = cleanerDBRepository;
         this.roomDBRepository = roomDBRepository;
+        this.roomCleanerDBRepository = roomCleanerDBRepository;
     }
 
 
@@ -78,8 +80,16 @@ public class HotelService{
      * @param roomID Integer object representing the ID of the room to be cleaned
      * @return true or false
      */
-    public boolean cleanRoom(Integer roomID){
+    public boolean cleanRoom(int cleanerId, Integer roomID){
         List<Room> roomList = roomDBRepository.getAll();
+
+        int ok = 0;
+        for (RoomCleaner roomCleaner: roomCleanerDBRepository.getAll())
+            if (roomCleaner.getCleanerId() == cleanerId)
+                if (roomCleaner.getRoomId() == roomID)
+                    ok = 1;
+        if (ok == 0)
+            throw new RuntimeException("You are not assigned to this floor as a cleaner");
 
         for (Room room : roomList) {
             if (room.getId().equals(roomID))
@@ -98,6 +108,30 @@ public class HotelService{
     }
     //--------------------------------------------------
 
+
+    //---------------ROOM CLEANER SECTION--------------
+
+    public List<RoomCleaner> getAllRoomCleaners(){
+        return roomCleanerDBRepository.getAll();
+    }
+
+    public void createRoomCleaner(int cleanerId, int floor){
+        for (Room room: getAllRooms())
+            if (room.getFloor() == floor)
+            {
+                int id = 0;
+                for (RoomCleaner roomCleaner: getAllRoomCleaners())
+                {
+                    if (id < roomCleaner.getId())
+                        id = roomCleaner.getId();
+                }
+                id += 1;
+
+                roomCleanerDBRepository.create(new RoomCleaner(id,room.getId(),cleanerId));
+            }
+    }
+
+    //-------------------------------------------------
 
 
     //---------------RECEPTIONIST SECTION---------------
@@ -184,6 +218,8 @@ public class HotelService{
      */
     public List<RoomCustomer> sortRoomCustomerByUntilDate(){
         List<RoomCustomer> roomCustomerList = new ArrayList<>(roomCustomerDBRepository.getAll());
+        if (roomCustomerList.isEmpty())
+            throw new IllegalArgumentException("No rooms exist, nothing to sort");
         Collections.sort(roomCustomerList);
         return roomCustomerList;
     }
@@ -237,7 +273,7 @@ public class HotelService{
      * @param salary salary of the employee
      * @param password password of the employee
      */
-    public void createEmployee(String type, String name, int salary, int departmentId, String password){
+    public void createEmployee(String type, String name, int salary, String password){
         //id of customers autoincrements (searches for maximum id and then +1)
         Integer id = getNextAvailableId();
         //List<Employee> employeeList = employeeRepository.getAll();
@@ -251,7 +287,9 @@ public class HotelService{
             int floor = sc.nextInt();
             sc.nextLine();
 
-            Cleaner employee = new Cleaner(id, name, salary, password, departmentId, floor);
+            Cleaner employee = new Cleaner(id, name, salary, password, 2, floor);
+            createRoomCleaner(id,floor);
+
             cleanerDBRepository.create(employee);
         }
         else if (type.equalsIgnoreCase("Receptionist")){
@@ -265,17 +303,15 @@ public class HotelService{
                     throw new NullPointerException("Language cannot be empty");
                 languages.add(language);
             }
-            Receptionist employee = new Receptionist(id, name, salary, password, departmentId, languages);
+            Receptionist employee = new Receptionist(id, name, salary, password, 1, languages);
             receptionistDBRepository.create(employee);
         }
         else if (type.equalsIgnoreCase("Manager")){
             System.out.println("Enter department id: ");
             int managerdepartmentId = sc.nextInt();
             sc.nextLine();
-            if (departmentId < 0)
-                throw new NullPointerException("Department id cannot be empty");
 
-            Manager employee = new Manager(id, name, salary, password, departmentId ,managerdepartmentId);
+            Manager employee = new Manager(id, name, salary, password, 3,managerdepartmentId);
             managerDBRepository.create(employee);
         }
     }
@@ -371,6 +407,8 @@ public class HotelService{
      */
     public List<Employee> sortEmployeesBySalary(){
         List<Employee> sortedEmployeeList = new ArrayList<>(getAllEmployees());
+        if (sortedEmployeeList.isEmpty())
+            throw new IllegalArgumentException("List of employees is empty, cannot sort");
 
         Collections.sort(sortedEmployeeList);
         return sortedEmployeeList;

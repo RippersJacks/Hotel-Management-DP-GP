@@ -53,7 +53,7 @@ public class ReceptionistDBRepository extends DBRepository<Receptionist>{
 
     @Override
     public void update(Receptionist receptionist) {
-        String sql = "UPDATE \"Cleaner\" SET \"Name\"=?,\"Salary\"=?,\"Password\"=?,\"DepartmentId\"=?,\"Languages\"=? WHERE \"Id\" = ?";
+        String sql = "UPDATE \"Receptionist\" SET \"Name\"=?,\"Salary\"=?,\"Password\"=?,\"DepartmentId\"=?,\"Languages\"=? WHERE \"Id\" = ?";
 
         try(PreparedStatement statement = connection.prepareStatement(sql)){
             statement.setString(1, receptionist.getName());

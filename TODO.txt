@@ -1,0 +1,2 @@
+README + UML actualizate
+Sa poti schimba din UI de la InFile la InMemory etc

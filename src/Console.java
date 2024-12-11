@@ -176,7 +176,7 @@ public class Console {
                         sc.nextLine();
                         if (roomId < 0)
                             throw new IllegalArgumentException("Invalid room ID: cannot be negative");
-                        hotelController.cleanRoomValidate(roomId);
+                        hotelController.cleanRoomValidate(id,roomId);
                         break;
                 }
             } else {
@@ -202,8 +202,9 @@ public class Console {
         CustomerDBRepository customerDBRepository = new CustomerDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
         CleanerDBRepository cleanerDBRepository = new CleanerDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
         RoomDBRepository roomDBRepository = new RoomDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
+        RoomCleanerDBRepository roomCleanerDBRepository = new RoomCleanerDBRepository("jdbc:postgresql://localhost/HotelManagement", "postgres", "User");
 
-        HotelService hotelService = new HotelService(receptionistDBRepository, roomCustomerDBRepository, managerDBRepository, departmentDBRepository, customerDBRepository, cleanerDBRepository, roomDBRepository);
+        HotelService hotelService = new HotelService(receptionistDBRepository, roomCustomerDBRepository, managerDBRepository, departmentDBRepository, customerDBRepository, cleanerDBRepository, roomDBRepository, roomCleanerDBRepository);
         HotelController hotelcontroller = new HotelController(hotelService);
         Console console = new Console(hotelcontroller);
         console.run(0);

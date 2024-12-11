@@ -32,6 +32,7 @@ public class CustomerDBRepository extends DBRepository<Customer> {
         try(PreparedStatement statement = connection.prepareStatement(sql)){
             statement.setString(1, customer.getName());
             statement.setInt(2, customer.getId());
+            statement.execute();
     }catch (SQLException e){
         throw new RuntimeException(e);}
     }
