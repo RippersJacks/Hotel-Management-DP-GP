@@ -2,12 +2,33 @@ package Hotel.model;
 
 public class Customer implements HasId {
     private Integer id;
+    private String email;
+    private String password;
     private String name;
 
-    public Customer(Integer id, String name) {
+    public Customer(Integer id, String email, String password, String name) {
         this.id = id;
+        this.email = email;
+        this.password = password;
         this.name = name;
     }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     @Override
     public Integer getId() {
         return id;

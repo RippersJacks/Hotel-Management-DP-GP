@@ -16,25 +16,27 @@ class ApplicationTest {
 
     HotelService hotelService;
     ReceptionistDBRepository receptionistDBRepository;
-    RoomCustomerDBRepository roomCustomerDBRepository;
+    ReservationDBRepository reservationDBRepository;
     ManagerDBRepository managerDBRepository;
     DepartmentDBRepository departmentDBRepository;
     CustomerDBRepository customerDBRepository;
     CleanerDBRepository cleanerDBRepository;
     RoomDBRepository roomDBRepository;
     RoomCleanerDBRepository roomCleanerDBRepository;
+    TimeDBRepository timeDBRepository;
 
     public ApplicationTest() {
         receptionistDBRepository = new ReceptionistDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
-        roomCustomerDBRepository = new RoomCustomerDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
+        reservationDBRepository = new ReservationDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
         managerDBRepository = new ManagerDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
         departmentDBRepository = new DepartmentDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
         customerDBRepository = new CustomerDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
         cleanerDBRepository = new CleanerDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
         roomDBRepository = new RoomDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
         roomCleanerDBRepository = new RoomCleanerDBRepository("jdbc:postgresql://localhost/HotelManagement", "postgres", "User");
+        timeDBRepository = new TimeDBRepository("jdbc:postgresql://localhost/HotelManagement", "postgres", "User");
 
-        hotelService = new HotelService(receptionistDBRepository, roomCustomerDBRepository, managerDBRepository, departmentDBRepository, customerDBRepository, cleanerDBRepository, roomDBRepository, roomCleanerDBRepository);
+        hotelService = new HotelService(receptionistDBRepository, reservationDBRepository, managerDBRepository, departmentDBRepository, customerDBRepository, cleanerDBRepository, roomDBRepository, roomCleanerDBRepository, timeDBRepository);
     }
 
     @Test
@@ -121,7 +123,7 @@ class ApplicationTest {
     @Test
     void createClient() {
         hotelService.createRoom(1973,-1,-1,"Single Room",-1,"Available");
-        hotelService.createClient("TestSubject123",1973,"2024-11-21","2024-11-28");
+        hotelService.createClient("TestSubject123","TestSubject@gmail.com","TestSubject");
 
         int ok = 0;
         int id = 0;
@@ -134,8 +136,8 @@ class ApplicationTest {
 
         hotelService.deleteClient(id);
         hotelService.deleteRoom(1973);
-        int idRoomCustomer = hotelService.searchRoomCustomerByCustomer(id).getFirst();
-        hotelService.deleteRoomCustomer(idRoomCustomer);
+        int idRoomCustomer = hotelService.searchReservationByCustomer(id).getFirst().getId();
+        hotelService.deleteReservation(idRoomCustomer);
 
         assertEquals(ok, 1);
     }
@@ -143,7 +145,7 @@ class ApplicationTest {
     @Test
     void deleteClient() {
         hotelService.createRoom(1973,-1,-1,"Single Room",-1,"Available");
-        hotelService.createClient("TestSubject123",1973,"2024-11-21","2024-11-28");
+        hotelService.createClient("TestSubject123","TestSubject@gmail.com","TestSubject");
 
         int ok = 0;
         int id = 0;
@@ -169,7 +171,7 @@ class ApplicationTest {
     @Test
     void updateClient() {
         hotelService.createRoom(1973,-1,-1,"Single Room",-1,"Available");
-        hotelService.createClient("TestSubject123",1973,"2024-11-21","2024-11-28");
+        hotelService.createClient("TestSubject123","TestSubject@gmail.com","TestSubject");
 
         int ok = 0;
         int id = 0;
@@ -181,7 +183,7 @@ class ApplicationTest {
             }
         assertEquals(ok, 1);
 
-        Customer client = new Customer(id,"TestedDeadSubject123");
+        Customer client = new Customer(id,"TestedDeadSubject123@gmail.com", "TestPassword","TestedDeadSubject123" );
         hotelService.updateClient(client);
 
         for (Customer customer: hotelService.getAllCustomers())
@@ -223,17 +225,17 @@ class ApplicationTest {
 
     @Test
     void sortRoomCustomerByUntilDate(){
-        ArrayList<RoomCustomer> sortedList = new ArrayList<>(hotelService.sortRoomCustomerByUntilDate());
+        ArrayList<Reservation> sortedList = new ArrayList<>(hotelService.sortRoomCustomerByUntilDate());
 
         for (int i=0;i<sortedList.size()-1;i++)
             for (int j=i+1;j<sortedList.size();j++)
-                assert sortedList.get(i).getUntilDate().compareTo(sortedList.get(j).getUntilDate()) <= 0;
+                assert sortedList.get(i).getCheckOut().compareTo(sortedList.get(j).getCheckOut()) <= 0;
     }
 
     @Test
     void getAllRoomsOfACustomer() {
         hotelService.createRoom(1973,-1,-1,"Single Room",-1,"Available");
-        hotelService.createClient("TestSubject123",1973,"2024-11-21","2024-11-28");
+        hotelService.createClient("TestSubject123","TestSubject@gmail.com","TestSubject");
 
         int id = -1;
         for (Customer customer: hotelService.getAllCustomers())
@@ -334,10 +336,10 @@ class ApplicationTest {
     @Test
     void createRoomCustomer() {
         hotelService.createRoom(1973,-1,-1,"Single Room",-1,"Available");
-        hotelService.createClient("TestSubject955",1973,"2024-11-21","2024-11-28");
+        hotelService.createClient("TestSubject123","TestSubject@gmail.com","TestSubject");
         int id=-1;
         for (Customer customer: hotelService.getAllCustomers())
             if (customer.getName().equals("TestSubject955")) {id=customer.getId(); break;}
-        hotelService.createRoomCustomer(id,1973,"2024-11-21","2024-11-28");
+        hotelService.createReservation(id,1973,"2024-11-21","2024-11-28");
     }
 }

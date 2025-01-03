@@ -15,10 +15,12 @@ public class CustomerDBRepository extends DBRepository<Customer> {
 
     @Override
     public void create(Customer customer) {
-        String sql = "Insert INTO \"Customer\" (\"Id\", \"Name\") VALUES (?,?)";
+        String sql = "Insert INTO \"Customer\" (\"Id\",\"Email\",\"Password\", \"Name\") VALUES (?,?,?,?)";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, customer.getId());
-            statement.setString(2, customer.getName());
+            statement.setString(2, customer.getEmail());
+            statement.setString(3, customer.getPassword());
+            statement.setString(4, customer.getName());
             statement.execute();
         } catch (
                 SQLException e) {
@@ -28,10 +30,12 @@ public class CustomerDBRepository extends DBRepository<Customer> {
 
     @Override
     public void update(Customer customer) {
-        String sql = "Update \"Customer\" SET \"Name\" = ? WHERE \"Id\" = ?";
+        String sql = "Update \"Customer\" SET \"Email\" = ?, \"Password\" = ?, \"Name\" = ? WHERE \"Id\" = ?";
         try(PreparedStatement statement = connection.prepareStatement(sql)){
-            statement.setString(1, customer.getName());
-            statement.setInt(2, customer.getId());
+            statement.setString(1, customer.getEmail());
+            statement.setString(2, customer.getPassword());
+            statement.setString(3, customer.getName());
+            statement.setInt(4, customer.getId());
             statement.execute();
     }catch (SQLException e){
         throw new RuntimeException(e);}
@@ -89,7 +93,7 @@ public class CustomerDBRepository extends DBRepository<Customer> {
 
 
     public static Customer extractFromResultSet(ResultSet resultSet) throws SQLException{
-        return new Customer(resultSet.getInt("Id"), resultSet.getString("Name"));
+        return new Customer(resultSet.getInt("Id"), resultSet.getString("Email"), resultSet.getString("Password"), resultSet.getString("Name"));
     }
 
 }

@@ -4,19 +4,19 @@ import java.time.ZoneId;
 import java.util.Date;
 
 
-public class RoomCustomer implements HasId, Comparable<RoomCustomer> {
+public class Reservation implements HasId, Comparable<Reservation> {
     private Integer id;
     private int roomId;
     private int customerId;
-    private Date fromDate;
-    private Date untilDate;
+    private Date CheckIn;
+    private Date CheckOut;
 
-    public RoomCustomer(Integer id, int roomId, int customerId, Date fromDate, Date untilDate) {
+    public Reservation(Integer id, int roomId, int customerId, Date CheckIn, Date CheckOut) {
         this.id = id;
         this.roomId = roomId;
         this.customerId = customerId;
-        this.fromDate = fromDate;
-        this.untilDate = untilDate;
+        this.CheckIn = CheckIn;
+        this.CheckOut = CheckOut;
     }
 
 
@@ -31,8 +31,8 @@ public class RoomCustomer implements HasId, Comparable<RoomCustomer> {
                 "id=" + id +
                 ", roomId=" + roomId +
                 ", customerId=" + customerId +
-                ", fromDate=" + fromDate +
-                ", untilDate=" + untilDate +
+                ", fromDate=" + CheckIn +
+                ", untilDate=" + CheckOut +
                 '}';
     }
 
@@ -56,23 +56,23 @@ public class RoomCustomer implements HasId, Comparable<RoomCustomer> {
         this.customerId = customerId;
     }
 
-    public Date getFromDate() {
-        return fromDate;
+    public Date getCheckIn() {
+        return CheckIn;
     }
 
-    public void setFromDate(Date date) {
-        this.fromDate = date;
+    public void setCheckIn(Date date) {
+        this.CheckIn = date;
     }
 
-    public Date getUntilDate() {return untilDate;}
+    public Date getCheckOut() {return CheckOut;}
 
-    public void setUntilDate(Date untilDate) {this.untilDate = untilDate;}
+    public void setCheckOut(Date checkOut) {this.CheckOut = checkOut;}
 
     @Override
-    public int compareTo(RoomCustomer other) {
+    public int compareTo(Reservation other) {
         // Convert both dates to LocalDate
-        LocalDate thisUntilDate = this.getUntilDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        LocalDate otherUntilDate = other.getUntilDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate thisUntilDate = this.getCheckOut().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate otherUntilDate = other.getCheckOut().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
         // Compare the dates directly (compares entire date, not just the day)
         return thisUntilDate.compareTo(otherUntilDate);
