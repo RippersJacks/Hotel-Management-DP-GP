@@ -3,10 +3,13 @@ package Hotel.controller;
 import Hotel.model.*;
 import Hotel.service.HotelService;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Scanner;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 public class HotelController {
     private final HotelService hotelService;
@@ -59,13 +62,16 @@ public class HotelController {
      * It also saves a roomCustomer in the database.
      * Everything happens after it checks, if the clients desired room type exists and is available.
      */
-    public void createClientValidate(){
+    public void createClientWithReservation() throws ParseException {
         Scanner sc = new Scanner(System.in);
 
-        System.out.println("Enter customer name: ");
+        System.out.println("Please enter your email address: ");
+        String email = sc.nextLine();
+        System.out.println("Please set a password for your account: ");
+        String password = sc.nextLine();
+        System.out.println("Please enter your name exactly as it appears on your identification card: ");
         String name = sc.nextLine();
-        if (name.isEmpty())
-            throw new IllegalArgumentException ("Customer name cannot be empty");
+        hotelService.createClient(name, email, password);
 
         System.out.println("Enter desired room type: ");
         String roomType = sc.nextLine();
@@ -83,12 +89,26 @@ public class HotelController {
         if (!checkOutDate.matches(datePattern))
             throw new IllegalArgumentException("Check-out date must be in the format YYYY-MM-DD");
 
+        SimpleDateFormat dateObject = new SimpleDateFormat("yyyy-MM-dd");
+        Date formattedCheckInDate = dateObject.parse(checkInDate);
+        Date formattedCheckOutDate = dateObject.parse(checkOutDate);
 
-        for (Room room: hotelService.getAvailableRooms()){
+
+        for (Room room: hotelService.getAllRooms()){
             if (room.getType().equals(roomType)){
                 int roomId = room.getId();
-                room.setAvailability("Unavailable");
-                hotelService.createClient(name, roomId, checkInDate, checkOutDate);
+                boolean intersectingDates = false;
+                for (Reservation reservation : hotelService.searchReservationsByRoom(roomId)){
+                    if (hotelService.checkIfDatesIntersect(reservation.getCheckIn(), reservation.getCheckOut(), formattedCheckInDate, formattedCheckOutDate)){
+                        intersectingDates = true;
+                        break;
+                    }
+                }
+                if (intersectingDates){
+                    continue;
+                }
+                hotelService.createReservation(hotelService.getAllCustomers().getLast().getId(), roomId, checkInDate, checkOutDate);
+
                 break;
             }
             throw new IllegalArgumentException("No available rooms left of this type");
@@ -120,7 +140,7 @@ public class HotelController {
         //---
 
         hotelService.deleteClient(id);
-        hotelService.deleteRoomCustomer(id);
+        hotelService.deleteReservation(id);
     }
 
     /**
@@ -132,8 +152,12 @@ public class HotelController {
         Integer id = sc.nextInt();
         sc.nextLine();
 
-        System.out.println("New customer name: ");
+        System.out.println("New customers new name: ");
         String name = sc.nextLine();
+        System.out.println("New customers new email: ");
+        String email = sc.nextLine();
+        System.out.println("New customer new password: ");
+        String password = sc.nextLine();
 
 
         //---Exceptions
@@ -153,16 +177,21 @@ public class HotelController {
             throw new IllegalArgumentException ("Customer name cannot be empty");
         //---
 
-        Customer customer = new Customer(id, name);
+        Customer customer = new Customer(id, name, email, password);
         hotelService.updateClient(customer);
     }
 
     /**
      * Shows all current customers of the hotel on the screen.
      */
+
+    public List<Customer> getAllCustomers() {
+        return hotelService.getAllCustomers();
+    }
+
     public void showAllCustomers(){
         System.out.println("\nCurrent list of customers:");
-        for (Customer customer:hotelService.getAllCustomers()){
+        for (Customer customer:getAllCustomers()){
             System.out.println(customer.toString());
         }
         System.out.println();
@@ -183,9 +212,9 @@ public class HotelController {
      */
     public void showInOrderUntilWhenCustomersStayInRoom(){
         System.out.println();
-        for (RoomCustomer roomCustomer : hotelService.sortRoomCustomerByUntilDate())
+        for (Reservation reservation : hotelService.sortRoomCustomerByUntilDate())
         {
-            System.out.println("Customer " + roomCustomer.getCustomerId() + " stays in room " + roomCustomer.getRoomId() + " until " + roomCustomer.getUntilDate());
+            System.out.println("Customer " + reservation.getCustomerId() + " stays in room " + reservation.getRoomId() + " until " + reservation.getCheckOut());
         }
         System.out.println();
     }
@@ -528,8 +557,209 @@ public class HotelController {
 
     //-------------------------------------------
 
-
     public List<Employee> getAllEmployees(){
         return hotelService.getAllEmployees();
     }
+    //-------CLIENT SECTION--------
+
+    /**
+     * Creates a new customer account directly by the client.
+     */
+    public void createAccount(){
+        Scanner sc = new Scanner(System.in);
+
+        System.out.println("Please enter your email address: ");
+        String email = sc.nextLine();
+        System.out.println("Please set a password for your account: ");
+        String password = sc.nextLine();
+        System.out.println("Please enter your name exactly as it appears on your identification card: ");
+        String name = sc.nextLine();
+
+        if (name.isEmpty() || password.isEmpty() || email.isEmpty())
+            throw new IllegalArgumentException ("Your credantials cannot be empty");
+
+        hotelService.createClient(name, email, password);
+    }
+
+
+    public List<Room>availableRoomsbyDate(String checkInDate, String checkOutDate ) throws ParseException {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter desired room type: ");
+        String roomType = sc.nextLine();
+        if (!roomType.equals("Twin Room") && !roomType.equals("Queen Room") && !roomType.equals("Suite") && !roomType.equals("Single Room"))
+            throw new IllegalArgumentException("Room type must be one of the following: Twin Room, Queen Room, Suite, Single Room");
+
+
+
+        SimpleDateFormat dateObject = new SimpleDateFormat("yyyy-MM-dd");
+        Date formattedCheckInDate = dateObject.parse(checkInDate);
+        Date formattedCheckOutDate = dateObject.parse(checkOutDate);
+
+        List<Room>availableRooms = new ArrayList<>();
+
+
+        for (Room room : hotelService.getAllRooms()) {
+            if (room.getType().equals(roomType)) {
+                int roomId = room.getId();
+                boolean intersectingDates = false;
+                for (Reservation reservation : hotelService.searchReservationsByRoom(roomId)) {
+                    if (hotelService.checkIfDatesIntersect(reservation.getCheckIn(), reservation.getCheckOut(), formattedCheckInDate, formattedCheckOutDate)) {
+                        intersectingDates = true;
+                        break;
+                    }
+                }
+                if (intersectingDates) {
+                    continue;
+                }else{
+                    availableRooms.add(room);
+                }
+            }
+        }
+        return availableRooms;
+    }
+
+    public void showCustomerAllReservations(int id){
+        System.out.println("Past Reservations:");
+        for(int i = 0; i < pastReservations(id).size(); i++){
+            System.out.println(pastReservations(id).get(i));
+        }
+        System.out.println("Future and Present Reservations:");
+        for(int i = 0; i < futureAndPresentReservations(id).size(); i++){
+            System.out.println(futureAndPresentReservations(id).get(i));
+        }
+
+    }
+
+
+    public void deleteReservationWithCondition(int customerId) throws ParseException {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter the id of the room in the reservation: ");
+        int roomId = sc.nextInt();
+        sc.nextLine();
+        System.out.println("Enter the check-in date of the reservation: ");
+        String checkInDate = sc.nextLine();
+        System.out.println("Enter the check-out date of the reservation: ");
+        String checkOutDate = sc.nextLine();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        long daysDifference = ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.parse(checkInDate, formatter));
+        if (daysDifference > 2) hotelService.deleteSpecificReservation(customerId, roomId, checkInDate, checkOutDate);
+
+    }
+
+    //-------------------------------------------
+
+    //-----------------RESERVATION SECTION------------------
+    public void createReservation (int customerId, int roomId, String checkInDate, String checkOutDate){
+        hotelService.createReservation(customerId, roomId, checkInDate, checkOutDate);
+    }
+
+
+    public void deleteReservation(int customerid, int roomId, String checkInDate, String checkOutDate) throws ParseException {
+        hotelService.deleteSpecificReservation(customerid, roomId, checkInDate, checkOutDate);
+    }
+
+
+    public List<Reservation> getAllReservations(){
+        return hotelService.getAllReservations();
+
+    }
+
+
+    public List<Reservation>pastReservations(int id){
+        List<Reservation> pastReservations = new ArrayList<>();
+        for (Reservation reservation : this.getAllReservations()){
+            if (reservation.getCustomerId() == id && reservation.getCheckOut().before(Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()))){pastReservations.add(reservation);}
+        }
+        return pastReservations;
+    }
+
+
+    public List<Reservation>futureAndPresentReservations(int id){
+        List<Reservation> futureReservations = new ArrayList<>();
+        for (Reservation reservation : this.getAllReservations()){
+            if (reservation.getCustomerId() == id && reservation.getCheckIn().after(Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()))){futureReservations.add(reservation);}
+        }
+        return futureReservations;
+    }
+
+    public void deleteAllReservationsOfAClient(int id){
+        for (Reservation reservation : this.getAllReservations()){
+            if (reservation.getCustomerId() == id){
+                hotelService.deleteReservation(reservation.getId());
+            }
+        }
+    }
+
+
+    //-------------------------------------------------------
+
+    public Customer getCustomerByEmail(String email){
+        for (Customer customer : hotelService.getAllCustomers()) {
+            if (customer.getEmail().equals(email)){
+                return customer;
+            }
+        }
+        return null;
+    }
+
+
+    public List<Room> getAllReservedRooms(){
+        List<Room>reservedRooms = new ArrayList<>();
+        for (Room room : hotelService.getAllRooms()) {
+            for (Reservation reservation : hotelService.getAllReservations()){
+                if (room.getId() == reservation.getRoomId()){
+                    reservedRooms.add(room);
+                    break;
+                }
+            }
+        }
+        return reservedRooms;
+    }
+
+
+    public boolean dateIsInInterval(String checkInDate, String checkOutDate, String comparedDate) throws ParseException {
+        SimpleDateFormat dateObject = new SimpleDateFormat("yyyy-MM-dd");
+        Date formattedCheckInDate = dateObject.parse(checkInDate);
+        Date formattedCheckOutDate = dateObject.parse(checkOutDate);
+        Date formattedComparedDate = dateObject.parse(comparedDate);
+        return formattedComparedDate.after(formattedCheckInDate) && formattedComparedDate.before(formattedCheckOutDate);
+    }
+
+
+    public List<Room>getAllReservedRoomsToday() throws ParseException {
+        List<Room>reservedRooms = new ArrayList<>();
+        for (Room room : this.getAllReservedRooms()) {
+            for (Reservation reservation : hotelService.getAllReservations()){
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                DateTimeFormatter formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                if (room.getId() == reservation.getRoomId() && dateIsInInterval(formatter.format(reservation.getCheckIn()), formatter.format(reservation.getCheckOut()), LocalDate.now().format(formatter1))){
+                    reservedRooms.add(room);
+                }
+            }
+        }
+        return reservedRooms;
+    }
+
+
+    public void makeAllCurrentReservedRoomsDirtyAndUpdateDate() throws ParseException {
+        for (Room room : this.getAllReservedRoomsToday()) {
+            hotelService.updateRoom(room.getId(), room.getFloor(), room.getNumber(), room.getType(), room.getPricePerNight(), "Dirty");
+        }
+        this.updateDate();
+    }
+
+
+    //--------Time Section-------
+    public void updateDate(){
+        hotelService.updateDate();
+    }
+
+
+    public String getDate(){
+        return hotelService.getDate();
+    }
+
+    //---------------------------
 }
+
+

@@ -1,10 +1,7 @@
 package Hotel;
 
 import Hotel.controller.HotelController;
-import Hotel.model.Cleaner;
-import Hotel.model.Employee;
-import Hotel.model.Manager;
-import Hotel.model.Receptionist;
+import Hotel.model.*;
 import Hotel.repository.Repository;
 
 import java.util.Scanner;
@@ -56,4 +53,14 @@ public class HotelRegistrationSystem {
             }
         return "N/A";
     }
+
+    public Customer clientLogin(String email, String password) {
+        for (Customer customer: controller.getAllCustomers()){
+            if (customer.getEmail().equals(email) && customer.getPassword().equals(password)){
+                return customer;
+            }
+        }
+        return null;
+    }
+
 }
