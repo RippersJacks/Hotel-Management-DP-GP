@@ -2,6 +2,7 @@ package Hotel.service;
 
 import Hotel.model.*;
 import Hotel.repository.DBRepository.*;
+import Hotel.repository.Repository;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -14,41 +15,42 @@ public class HotelService{
     //private final Repository<Customer> customerRepository;
     //private final Repository<Department> departmentRepository;
     //private final Repository<RoomCustomer> roomCustomerRepository;
-    private final ReceptionistDBRepository receptionistDBRepository;
-    private final ReservationDBRepository reservationDBRepository;
-    private final ManagerDBRepository managerDBRepository;
-    private final DepartmentDBRepository departmentDBRepository;
-    private final CustomerDBRepository customerDBRepository;
-    private final CleanerDBRepository cleanerDBRepository;
-    private final RoomDBRepository roomDBRepository;
-    private final RoomCleanerDBRepository roomCleanerDBRepository;
+    private final Repository<Receptionist> receptionistRepository;
+    private final Repository<Reservation> reservationRepository;
+    private final Repository<Manager> managerRepository;
+    private final Repository<Department> departmentRepository;
+    private final Repository<Customer> customerRepository;
+    private final Repository<Cleaner> cleanerRepository;
+    private final Repository<Room> roomRepository;
+    private final Repository<RoomCleaner> roomCleanerRepository;
     private final TimeDBRepository timeDBRepository;
 
     /**
      * Contains the functionality of the project and works with the repositories.
-     * @param roomDBRepository repository with objects of type Room
-     * @param cleanerDBRepository repository with objects of type Employee
-     * @param customerDBRepository repository with objects of type Customer
-     * @param departmentDBRepository repository with objects of type Department
-     * @param reservationDBRepository repository with objects of type RoomCustomer (crossing table for Room & Customer)
+     * @param roomRepository repository with objects of type Room
+     * @param cleanerRepository repository with objects of type Employee
+     * @param customerRepository repository with objects of type Customer
+     * @param departmentRepository repository with objects of type Department
+     * @param reservationRepository repository with objects of type RoomCustomer (crossing table for Room & Customer)
      */
-    public HotelService(ReceptionistDBRepository receptionistDBRepository, ReservationDBRepository reservationDBRepository, ManagerDBRepository managerDBRepository, DepartmentDBRepository departmentDBRepository, CustomerDBRepository customerDBRepository, CleanerDBRepository cleanerDBRepository, RoomDBRepository roomDBRepository, RoomCleanerDBRepository roomCleanerDBRepository, TimeDBRepository timeDBRepository) {
+    public HotelService(Repository<Receptionist> receptionistRepository, Repository<Reservation> reservationRepository, Repository<Manager> managerRepository, Repository<Department> departmentRepository, Repository<Customer> customerRepository, Repository<Cleaner> cleanerRepository, Repository<Room> roomRepository, Repository<RoomCleaner> roomCleanerRepository, TimeDBRepository timeDBRepository) {
         //this.roomRepository = roomRepository;
         //this.employeeRepository = employeeRepository;
         //this.customerRepository = customerRepository;
         //this.departmentRepository = departmentRepository;
         //this.roomCustomerRepository = roomCustomerRepository;
-        this.receptionistDBRepository = receptionistDBRepository;
-        this.reservationDBRepository = reservationDBRepository;
-        this.managerDBRepository = managerDBRepository;
-        this.departmentDBRepository = departmentDBRepository;
-        this.customerDBRepository = customerDBRepository;
-        this.cleanerDBRepository = cleanerDBRepository;
-        this.roomDBRepository = roomDBRepository;
-        this.roomCleanerDBRepository = roomCleanerDBRepository;
+        this.receptionistRepository = receptionistRepository;
+        this.reservationRepository = reservationRepository;
+        this.managerRepository = managerRepository;
+        this.departmentRepository = departmentRepository;
+        this.customerRepository = customerRepository;
+        this.cleanerRepository = cleanerRepository;
+        this.roomRepository = roomRepository;
+        this.roomCleanerRepository = roomCleanerRepository;
         this.timeDBRepository = timeDBRepository;
-
     }
+
+
 
 
     //---------------CLEANER SECTION---------------
@@ -58,7 +60,7 @@ public class HotelService{
      * @return list with objects of type Room, with availability Dirty
      */
     public List<Room> checkDirtyRooms(){
-        List<Room> roomList = roomDBRepository.getAll();
+        List<Room> roomList = roomRepository.getAll();
         if (roomList.isEmpty()){throw new NullPointerException("No rooms exist");}
         List<Room> dirtyRoomList = new ArrayList<>();
 
@@ -83,11 +85,11 @@ public class HotelService{
      * @return true or false
      */
     public boolean cleanRoom(int cleanerId, Integer roomID){
-        List<Room> roomList = roomDBRepository.getAll();
+        List<Room> roomList = roomRepository.getAll();
 
         int ok = 0;
-        for (RoomCleaner roomCleaner: roomCleanerDBRepository.getAll())
-            if (roomCleaner.getCleanerId() == cleanerId)
+        for (RoomCleaner roomCleaner: roomCleanerRepository.getAll())
+            if (roomCleaner.getId() == cleanerId)
                 if (roomCleaner.getRoomId() == roomID)
                     ok = 1;
         if (ok == 0)
@@ -99,7 +101,7 @@ public class HotelService{
                 if (room.getAvailability().equals("Dirty"))
                 {
                     room.setAvailability("Available");
-                    roomDBRepository.update(room);
+                    roomRepository.update(room);
                     return true;
                 }
                 else
@@ -114,9 +116,9 @@ public class HotelService{
     //---------------ROOM CLEANER SECTION--------------
 
     public List<RoomCleaner> getAllRoomCleaners(){
-        if (roomCleanerDBRepository.getAll().isEmpty())
+        if (roomCleanerRepository.getAll().isEmpty())
             throw new RuntimeException("No RoomCleaner relations exist");
-        return roomCleanerDBRepository.getAll();
+        return roomCleanerRepository.getAll();
     }
 
     public void createRoomCleaner(int cleanerId, int floor){
@@ -124,7 +126,7 @@ public class HotelService{
             if (room.getFloor() == floor)
             {
                 int id = 0;
-                if (!roomCleanerDBRepository.getAll().isEmpty())
+                if (!roomCleanerRepository.getAll().isEmpty())
                     for (RoomCleaner roomCleaner: getAllRoomCleaners())
                     {
                         if (id < roomCleaner.getId())
@@ -132,7 +134,7 @@ public class HotelService{
                     }
                 id += 1;
 
-                roomCleanerDBRepository.create(new RoomCleaner(id,room.getId(),cleanerId));
+                roomCleanerRepository.create(new RoomCleaner(id,room.getId(),cleanerId));
             }
     }
 
@@ -152,12 +154,12 @@ public class HotelService{
     public void createClient(String name, String email, String password) {
         //id of customers autoincrements (searches for maximum id and then +1)
         Integer id = 0;
-        List<Customer> customerList = customerDBRepository.getAll();
+        List<Customer> customerList = customerRepository.getAll();
         for (Customer customer : customerList) {if (id < customer.getId()) id = customer.getId();}
         id += 1;
 
         Customer client = new Customer(id, email, password, name);
-        customerDBRepository.create(client);
+        customerRepository.create(client);
     }
 
     /**
@@ -167,16 +169,16 @@ public class HotelService{
     public void deleteClient(Integer clientID) {
 
         //Search for the room in which the customer stayed in order to change its availability; used crossing table for this
-        List<Reservation> reservationList = reservationDBRepository.getAll();
+        List<Reservation> reservationList = reservationRepository.getAll();
 
         for (Reservation reservation : reservationList) {
             if (clientID.equals(reservation.getCustomerId()))
             {
-                roomDBRepository.delete(reservation.getId());
+                roomRepository.delete(reservation.getId());
             }
         }
 
-        customerDBRepository.delete(clientID);
+        customerRepository.delete(clientID);
     }
 
     /**
@@ -184,7 +186,7 @@ public class HotelService{
      * @param client object of type Customer, a.k.a. the customer to be updated
      */
     public void updateClient(Customer client) {
-        customerDBRepository.update(client);
+        customerRepository.update(client);
     }
 
     /**
@@ -192,7 +194,7 @@ public class HotelService{
      * @return list of customers
      */
     public List<Customer>getAllCustomers(){
-        return customerDBRepository.getAll();
+        return customerRepository.getAll();
     }
 
     /**
@@ -204,7 +206,7 @@ public class HotelService{
         //lambda function inheriting the checkRoom functionality of the Receptionist Class
         Predicate<Room> checkIfRoomIsAvailable = receptionistFunction::checkRoom;
 
-        return roomDBRepository.getAll().stream().filter(checkIfRoomIsAvailable).toList();
+        return roomRepository.getAll().stream().filter(checkIfRoomIsAvailable).toList();
     }
 
     /**
@@ -212,7 +214,7 @@ public class HotelService{
      * @return the sorted list of RoomCustomer objects
      */
     public List<Reservation> sortRoomCustomerByUntilDate(){
-        List<Reservation> reservationList = new ArrayList<>(reservationDBRepository.getAll());
+        List<Reservation> reservationList = new ArrayList<>(reservationRepository.getAll());
         if (reservationList.isEmpty())
             throw new IllegalArgumentException("No rooms exist, nothing to sort");
         Collections.sort(reservationList);
@@ -229,9 +231,9 @@ public class HotelService{
 
         List<Room> roomList = new ArrayList<>();
 
-        for (Reservation reservation : reservationDBRepository.getAll()) {
+        for (Reservation reservation : reservationRepository.getAll()) {
             if (reservation.getCustomerId() == customerID)
-                roomList.add(roomDBRepository.get(reservation.getRoomId()));
+                roomList.add(roomRepository.get(reservation.getRoomId()));
         }
 
         return roomList;
@@ -244,9 +246,9 @@ public class HotelService{
 
     public List<Employee>getAllEmployees(){
         List<Employee> employeeList = new ArrayList<>();
-        List<Cleaner> cleanerList = cleanerDBRepository.getAll();
-        List<Manager> managerList = managerDBRepository.getAll();
-        List<Receptionist> receptionistList = receptionistDBRepository.getAll();
+        List<Cleaner> cleanerList = cleanerRepository.getAll();
+        List<Manager> managerList = managerRepository.getAll();
+        List<Receptionist> receptionistList = receptionistRepository.getAll();
         employeeList.addAll(cleanerList);
         employeeList.addAll(managerList);
         employeeList.addAll(receptionistList);
@@ -285,7 +287,7 @@ public class HotelService{
             Cleaner employee = new Cleaner(id, name, salary, password, 2, floor);
             createRoomCleaner(id,floor);
 
-            cleanerDBRepository.create(employee);
+            cleanerRepository.create(employee);
         }
         else if (type.equalsIgnoreCase("Receptionist")){
             ArrayList<String> languages = new ArrayList<>();
@@ -299,7 +301,7 @@ public class HotelService{
                 languages.add(language);
             }
             Receptionist employee = new Receptionist(id, name, salary, password, 1, languages);
-            receptionistDBRepository.create(employee);
+            receptionistRepository.create(employee);
         }
         else if (type.equalsIgnoreCase("Manager")){
             System.out.println("Enter department id: ");
@@ -307,7 +309,7 @@ public class HotelService{
             sc.nextLine();
 
             Manager employee = new Manager(id, name, salary, password, 3,managerdepartmentId);
-            managerDBRepository.create(employee);
+            managerRepository.create(employee);
         }
     }
 
@@ -316,9 +318,9 @@ public class HotelService{
      * @param id ID of the employee to be removed
      */
     public void deleteEmployee(Integer id){
-        managerDBRepository.delete(id);
-        receptionistDBRepository.delete(id);
-        cleanerDBRepository.delete(id);
+        managerRepository.delete(id);
+        receptionistRepository.delete(id);
+        cleanerRepository.delete(id);
     }
 
 
@@ -328,9 +330,9 @@ public class HotelService{
      * @param employee employee object with same ID, new data (salary,password)
      */
     public void updateEmployee(Employee employee){
-        managerDBRepository.update((Manager) employee);
-        receptionistDBRepository.update((Receptionist) employee);
-        cleanerDBRepository.update((Cleaner) employee);
+        managerRepository.update((Manager) employee);
+        receptionistRepository.update((Receptionist) employee);
+        cleanerRepository.update((Cleaner) employee);
 
     }
 
@@ -376,7 +378,7 @@ public class HotelService{
                 break;
             }
         }
-        for (Department department : departmentDBRepository.getAll()){
+        for (Department department : departmentRepository.getAll()){
             if (manager.getManagedDepartmentID().equals(department.getId())){
                 switch (department.getName()){
                     case "Receptionist Department" : return "Receptionist";
@@ -394,7 +396,7 @@ public class HotelService{
         //return employeeDBRepository.getAll();
     //}
     public List<Department> showAllDepartments(){
-        return departmentDBRepository.getAll();
+        return departmentRepository.getAll();
     }
 
     /**
@@ -414,31 +416,32 @@ public class HotelService{
     //-----------------DEPARTMENT SECTION------------------
     public void createDepartment(String name) {
         Integer id = 0;
-        List<Department> departmentList = departmentDBRepository.getAll();
+        List<Department> departmentList = departmentRepository.getAll();
         for (Department department : departmentList) {if (id < department.getId()) id = department.getId();}
         id += 1;
 
         Department newDepartment = new Department(id, name);
-        departmentDBRepository.create(newDepartment);
+        departmentRepository.create(newDepartment);
     }
 
 
     public void deleteDepartment(int id) {
-        departmentDBRepository.delete(id);
+        departmentRepository.delete(id);
     }
 
-    public void updateDepartment(Department department) {departmentDBRepository.update(department);}
+    public void updateDepartment(Department department) {
+        departmentRepository.update(department);}
 
     public List<Department> getAllDepartments(){
-        return departmentDBRepository.getAll();
+        return departmentRepository.getAll();
     }
 
     public List<? extends Employee> getDepartmentEmployees(int id) {
-        if (id == managerDBRepository.getAll().getFirst().getId()){
-            return managerDBRepository.getAll();
-        }else if (id == cleanerDBRepository.getAll().getFirst().getId()){
-            return cleanerDBRepository.getAll();
-        }else return receptionistDBRepository.getAll();
+        if (id == managerRepository.getAll().getFirst().getId()){
+            return managerRepository.getAll();
+        }else if (id == cleanerRepository.getAll().getFirst().getId()){
+            return cleanerRepository.getAll();
+        }else return receptionistRepository.getAll();
     }
 
     /**
@@ -471,7 +474,7 @@ public class HotelService{
             return sum > inputNumber;
         };
 
-        List<Department> departmentList = departmentDBRepository.getAll();
+        List<Department> departmentList = departmentRepository.getAll();
         return departmentList.stream().filter(avgSalaryOverGivenNr).toList();
     }
 
@@ -482,7 +485,7 @@ public class HotelService{
     //-----------------RESERVATION SECTION------------------
     public void createReservation(int customerId, int roomId, String checkInDate, String checkOutDate) {
         Integer id = 0;
-        List<Reservation> reservationList = reservationDBRepository.getAll();
+        List<Reservation> reservationList = reservationRepository.getAll();
         for (Reservation reservation : reservationList) {if (id < reservation.getId()) id = reservation.getId();}
         id += 1;
 
@@ -491,7 +494,7 @@ public class HotelService{
             Date dateFormatCheckInDate = formatter.parse(checkInDate);
             Date dateFormatCheckOutDate = formatter.parse(checkOutDate);
             Reservation newReservation = new Reservation(id, roomId, customerId, dateFormatCheckInDate, dateFormatCheckOutDate);
-            reservationDBRepository.create(newReservation);
+            reservationRepository.create(newReservation);
 
         } catch (ParseException e) {
             e.printStackTrace();
@@ -500,12 +503,12 @@ public class HotelService{
     }
 
     public List<Reservation> getAllReservations() {
-        return reservationDBRepository.getAll();
+        return reservationRepository.getAll();
     }
 
     public List<Reservation> searchReservationByCustomer(int id){
         ArrayList<Reservation>reservationsList = new ArrayList<>();
-        for (Reservation reservation : reservationDBRepository.getAll()){
+        for (Reservation reservation : reservationRepository.getAll()){
             if (reservation.getCustomerId() == id) reservationsList.add(reservation);
         }
         return reservationsList;
@@ -516,23 +519,23 @@ public class HotelService{
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         for (Reservation reservation : searchReservationByCustomer(customerid))
             if (reservation.getRoomId() == roomId && reservation.getCheckIn().equals(formatter.parse(checkInDate)) && reservation.getCheckOut().equals(formatter.parse(checkOutDate))) {
-                reservationDBRepository.delete(reservation.getId());
+                reservationRepository.delete(reservation.getId());
 
             }
     }
 
 
     public void deleteReservation(int reservationId) {
-        reservationDBRepository.delete(reservationId);
+        reservationRepository.delete(reservationId);
     }
 
     public void updateReservation(Reservation reservation) {
-        reservationDBRepository.update(reservation);}
+        reservationRepository.update(reservation);}
 
 
     public List<Reservation> searchReservationsByRoom(int id){
         ArrayList<Reservation>reservationsList = new ArrayList<>();
-        for (Reservation reservation : reservationDBRepository.getAll()){
+        for (Reservation reservation : reservationRepository.getAll()){
             if (reservation.getRoomId() == id) reservationsList.add(reservation);
         }
         return reservationsList;
@@ -554,23 +557,23 @@ public class HotelService{
     //--> only used for tests
 
     public void createRoom(int id, int floor, int number, String type, int pricePerNight, String availability){
-        roomDBRepository.create(new Room(id, floor, number, type, pricePerNight, availability));
+        roomRepository.create(new Room(id, floor, number, type, pricePerNight, availability));
     }
 
     public void deleteRoom(int id) {
-        roomDBRepository.delete(id);
+        roomRepository.delete(id);
     }
 
     public void updateRoom(int id, int floor, int number, String type, int pricePerNight, String availability) {
-        roomDBRepository.update(new Room(id, floor, number, type, pricePerNight, availability));
+        roomRepository.update(new Room(id, floor, number, type, pricePerNight, availability));
     }
 
     public Room getRoom(int id){
-        return roomDBRepository.get(id);
+        return roomRepository.get(id);
     }
 
     public List<Room> getAllRooms(){
-        return roomDBRepository.getAll();
+        return roomRepository.getAll();
     }
 
     //--------Time Section-------
