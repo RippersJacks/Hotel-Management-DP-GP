@@ -78,7 +78,7 @@ public class Console {
                             4. See all customers
                             5. See all available rooms
                             6. See in which order the current customers will check out
-                            7. See all rooms of a customer
+                            7. See all reservations of a customer
                             8. Stop
                             0. Logout
                             """);
@@ -103,13 +103,29 @@ public class Console {
                             hotelController.showAllCustomers();
                             break;
                         case 5:
-                            hotelController.showAllAvailableRooms();
+                            String datePattern = "^(\\d{4})-(\\d{2})-(\\d{2})$";
+                            System.out.println("Enter start date (Format: YYYY-MM-DD): ");
+                            String checkInDate = sc.nextLine();
+                            if (!checkInDate.matches(datePattern))
+                                throw new IllegalArgumentException("Check-in date must be in the format YYYY-MM-DD");
+
+                            System.out.println("Enter end date (Format: YYYY-MM-DD): ");
+                            String checkOutDate = sc.nextLine();
+                            if (!checkOutDate.matches(datePattern))
+                                throw new IllegalArgumentException("Check-out date must be in the format YYYY-MM-DD");
+
+                            List<Room> roomsByType = hotelController.availableRoomsbyDate(checkInDate, checkOutDate);
+                            System.out.println("The following rooms are available between "+checkInDate+" and "+checkOutDate+":");
+                            for (int i = 0; i < roomsByType.size(); i++){
+                                System.out.println(i + ". " + roomsByType.get(i).toStringForCustomers());
+                            }
+                            System.out.println();
                             break;
                         case 6:
                             hotelController.showInOrderUntilWhenCustomersStayInRoom();
                             break;
                         case 7:
-                            hotelController.showAllRoomsOfACustomer();
+                            hotelController.showAllReservationsOfAClient();
                             break;
                     }
                 } else if (role.equalsIgnoreCase("Manager")) {

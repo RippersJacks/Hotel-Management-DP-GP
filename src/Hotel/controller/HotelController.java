@@ -253,6 +253,32 @@ public class HotelController {
         for (Room room: roomList)
             System.out.println(room.toString());
     }
+
+    public void showAllReservationsOfAClient(){
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter customer id: ");
+        int customerID = sc.nextInt();
+        sc.nextLine();
+
+        if (customerID < 0)
+            throw new IllegalArgumentException ("Customer id cannot be negative");
+
+        int ok = 0;
+        for (Customer customer: hotelService.getAllCustomers())
+            if (Objects.equals(customer.getId(), customerID)) {
+                ok = 1;
+                break;
+            }
+        if (ok == 0)
+            throw new IllegalArgumentException("Customer id " + customerID + " does not exist");
+
+        List<Reservation> reservationList = hotelService.getAllReservationsOfACustomer(customerID);
+        System.out.println("Reservations belonging to customer " + customerID + ": ");
+        for (Reservation reservation: reservationList)
+            System.out.println(reservation.toString());
+
+    }
+
     //-------------------------------------------
 
 
