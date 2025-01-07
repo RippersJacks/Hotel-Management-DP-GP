@@ -235,6 +235,7 @@ public class Console {
                     hotelController.createAccount();
 
                 }else if (loginOrRegisterChoice == 0){
+                    run(0);
                     break;
                 }
             }
@@ -244,7 +245,7 @@ public class Console {
                         Choose what you want to do
                         1. Reserve a room
                         2. See all future, present and past reservations
-                        3. Cancel a reservation(Only Available if check-in is minimum 48 hours away)
+                        3. Cancel a reservation (Only Available if check-in is minimum 48 hours away)
                         4. See all available rooms by type, for a specific time interval
                         5. See all room types we offer
                         0. Logout
@@ -287,20 +288,22 @@ public class Console {
 
                     case 4:
                         datePattern = "^(\\d{4})-(\\d{2})-(\\d{2})$";
-                        System.out.println("Enter check-in date (Format: YYYY-MM-DD): ");
+                        System.out.println("Enter start date (Format: YYYY-MM-DD): ");
                         checkInDate = sc.nextLine();
                         if (!checkInDate.matches(datePattern))
                             throw new IllegalArgumentException("Check-in date must be in the format YYYY-MM-DD");
 
-                        System.out.println("Enter check-out date: ");
+                        System.out.println("Enter end date (Format: YYYY-MM-DD): ");
                         checkOutDate = sc.nextLine();
                         if (!checkOutDate.matches(datePattern))
                             throw new IllegalArgumentException("Check-out date must be in the format YYYY-MM-DD");
 
                         roomsByType = hotelController.availableRoomsbyDate(checkInDate, checkOutDate);
+                        System.out.println("The following rooms are available between "+checkInDate+" and "+checkOutDate+":");
                         for (int i = 0; i < roomsByType.size(); i++){
-                            System.out.println(i + ". " + roomsByType.get(i));
+                            System.out.println(i + ". " + roomsByType.get(i).toStringForCustomers());
                         }
+                        System.out.println();
                         break;
 
                     case 5:

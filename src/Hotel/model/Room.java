@@ -77,6 +77,10 @@ public class Room implements HasId {
                 ", availability='" + availability + '\'' +
                 '}';
     }
+
+    public String toStringForCustomers(){
+        return type+" "+number+" on floor "+floor+" (price per night: "+pricePerNight+")";
+    }
 }
 
 

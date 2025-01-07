@@ -60,17 +60,23 @@ public class HotelService{
      * @return list with objects of type Room, with availability Dirty
      */
     public List<Room> checkDirtyRooms(){
-        List<Room> roomList = roomRepository.getAll();
-        if (roomList.isEmpty()){throw new NullPointerException("No rooms exist");}
-        List<Room> dirtyRoomList = new ArrayList<>();
+        try{
+            List<Room> roomList = roomRepository.getAll();
+            if (roomList.isEmpty()){throw new NullPointerException("No rooms exist");}
+            List<Room> dirtyRoomList = new ArrayList<>();
 
-        Cleaner cleanerFunction = new Cleaner(0,"",0,"",0,0); //just for the use of the checkRoom function which is located in the Cleaner class
+            Cleaner cleanerFunction = new Cleaner(0,"",0,"",0,0); //just for the use of the checkRoom function which is located in the Cleaner class
 
-        for (Room room : roomList) {
-            if (cleanerFunction.checkRoom(room))
-                dirtyRoomList.add(room);
+            for (Room room : roomList) {
+                if (cleanerFunction.checkRoom(room))
+                    dirtyRoomList.add(room);
+            }
+            return dirtyRoomList;
         }
-        return dirtyRoomList;
+        catch (NullPointerException e){
+            System.out.println(e.getMessage());
+            return new ArrayList<>();
+        }
     }
 
     /**

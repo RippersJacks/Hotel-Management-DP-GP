@@ -36,9 +36,12 @@ public class HotelController {
         roomList = hotelService.checkDirtyRooms();
 
         //show all dirty rooms on the screen
-        System.out.println("Dirty rooms: ");
-        for (Room room: roomList)
-            System.out.println(room.getId() + " (nr. " + room.getNumber() + ", floor " + room.getFloor() + ")");
+        if (!roomList.isEmpty()){
+            System.out.println("Dirty rooms: ");
+            for (Room room: roomList)
+                System.out.println(room.getId() + " (nr. " + room.getNumber() + ", floor " + room.getFloor() + ")");
+        }
+
     }
 
     /**
