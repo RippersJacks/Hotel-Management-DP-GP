@@ -245,6 +245,14 @@ public class HotelService{
         return roomList;
     }
 
+    public List<Reservation> getAllReservationsOfACustomer(int customerID){
+        List<Reservation> reservationList = new ArrayList<>();
+        for (Reservation reservation : reservationRepository.getAll()) {
+            if (reservation.getCustomerId() == customerID) reservationList.add(reservation);
+        }
+        return reservationList;
+    }
+
     //--------------------------------------------------
 
 
@@ -551,8 +559,10 @@ public class HotelService{
     public boolean checkIfDatesIntersect(Date checkInDate1, Date checkOutDate1, Date checkInDate2, Date checkOutDate2) {
         if ((checkInDate2.after(checkInDate1) && checkInDate2.before(checkOutDate1)) || checkInDate2.equals(checkOutDate1) || checkInDate2.equals(checkInDate1)) {
             return true;
-        }
-        else return (checkOutDate2.after(checkInDate1) && checkOutDate2.before(checkOutDate1)) || checkOutDate2.equals(checkOutDate1) || checkOutDate2.equals(checkInDate1);
+        } else if (checkInDate2.before(checkInDate1) && checkOutDate2.after(checkOutDate1)) {
+            return true;
+
+        } else return (checkOutDate2.after(checkInDate1) && checkOutDate2.before(checkOutDate1)) || checkOutDate2.equals(checkOutDate1) || checkOutDate2.equals(checkInDate1);
     }
 
     //--------------------------------------------------
