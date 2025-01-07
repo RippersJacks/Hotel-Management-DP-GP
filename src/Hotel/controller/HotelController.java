@@ -143,7 +143,7 @@ public class HotelController {
         //---
 
         hotelService.deleteClient(id);
-        hotelService.deleteReservation(id);
+        this.deleteAllReservationsOfAClient(id);
     }
 
     /**
