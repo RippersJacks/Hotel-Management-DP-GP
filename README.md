@@ -1,20 +1,20 @@
-Man fängt von einer Login-Seite an. Hier wird bestimmt, ob der User
-ein Manager, ein Cleaner oder ein Receptionist sein wird. Es werden ID
-und Password eingegeben. Demfolge wird man zu einer Seite geführt, von
-der man bestimmte Aktionen durchführen kann.
+Die Anwendung ist benutzerfreundlich sowohl fur Klienten des Hotels, als auch, 
+insbesondere, fur die Arbeiter des Hotels. Man kann sich entweder als Klient,
+als Arbeiter oder als Administrator einloggen.
 
-Ein Cleaner kann ein Zimmer putzen (ein unsauberes Zimmer kann von Klienten nicht
-genommen werden).
+Ein Klient kann sich ein eigenes Konto erstellen, wo er eigene Daten besitzen wird.
+In der Klientenabteilung kann man die momentan freien Zimmer, aber auch zukunftig
+freie Zimmer sehen. 
 
-Ein Rezeptionist kann die Klienten im System des Hotels mit deren ausgewähltem
-Zimmer speichern.
+Ein Arbeiter besitzt auch ein eigenes Konto, es gibt aber 3 unterschiedliche Kategorien:
+Der Putzer (Cleaner), der die Zimmer glatt und sauber halt.
+Der Rezeptionist, der die Klienten behandelt.
+Und der Manager, der alle Arbeiterkategorien behandelt.
 
-Ein Manager kann Angestellte feuern, deren Attribute ändern oder
-mehrere Arbeiter anstellen.
+Fur den Administrator gibt es nur ein generelles Konto, in dem man sich mit dem
+Password HEXA123F! einloggt. Der Administrator entscheidet fur die kurrente Anwendung,
+ob Daten im Netzwerk, lokal oder gar nicht gespeichert werden.
+Er hat auch die Option, die lokal gespeicherten Daten durch die online gespeicherten Daten
+zu ersetzen, und umgekehrt.
 
-Ein Klient darf mehrere Zimmer renten, damit es für Firmen günstig ist, welche
-mehrere Angestellte einbringen wollen. Es können aber auch mehrere Klienten im
-selben Zimmer leben. Klienten werden vom Rezeptionisten von der
-Aktionen-Seite (nach der Login-Seite) behandelt.
-
-![img.png](img.png)
+![UML_HotelManagement.png](UML_HotelManagement.png)
