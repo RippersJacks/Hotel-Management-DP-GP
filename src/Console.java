@@ -209,6 +209,7 @@ public class Console {
             }
         }else if(loginTypeChoice == 1){
             int loggedInCustomersId = -1;
+            boolean loggedIn = false;
             boolean notLoggedIn = true;
             while (notLoggedIn) {
                 System.out.println("1. Login");
@@ -225,6 +226,7 @@ public class Console {
                         if (customer != null){
                             loggedInCustomersId = hotelController.getCustomerByEmail(email).getId();
                             notLoggedIn = false;
+                            loggedIn = true;
                         }else {
                             System.out.println("Invalid email or password");
 
@@ -236,13 +238,13 @@ public class Console {
                     break;
                 }
             }
-            boolean loggedIn = true;
+
             while (loggedIn) {
                 System.out.println("""
                         Choose what you want to do
                         1. Reserve a room
                         2. See all future, present and past reservations
-                        3. Cencel a reservation(Only Available if check-in is minimum 48 hours away)
+                        3. Cancel a reservation(Only Available if check-in is minimum 48 hours away)
                         4. See all available rooms by type, for a specific time interval
                         5. See all room types we offer
                         0. Logout
@@ -320,67 +322,76 @@ public class Console {
 
             if (password.equals("HEXA123F!"))
             {
-                System.out.println("""
+                boolean loggedIn = true;
+                while (loggedIn)
+                {
+                    System.out.println("""
                         1. Change repository type
                         2. Override one repository over the other
+                        0. Logout
                         """);
-                int choice = takeUsersChoice();
+                    int choice = takeUsersChoice();
 
-                if (choice == 1){
-                    System.out.println("""
+                    if (choice == 1){
+                        System.out.println("""
                             Change to:
                               1. Testing zone (InMemoryRepository, changes will NOT be applied)
                               2. Local saves  (InFileRepository, changes will only be saved locally
                               3. Online saves (InDataBaseRepository, changes will be visible to everyone else\s""");
-                    int choice1 = takeUsersChoice();
-                    String repositoryType = "";
-                    if (choice1 == 1)
-                        repositoryType = "Memory";
-                    else if (choice1 == 2)
-                        repositoryType = "Local";
-                    else if (choice1 == 3)
-                        repositoryType = "Online";
-                    HotelService hotelService = createHotelServiceObject(repositoryType);
-                    HotelController hotelcontroller = new HotelController(hotelService);
-                    Console console = new Console(hotelcontroller);
-                    console.run(0);
-                    throw new RuntimeException("Exitted application");  //to break recursion
-                }
-                else if (choice == 2){
-                    String origin = "", target = "";
-                    System.out.println("""
-                            Repository to take data from:\s
-                            1. Memory
-                            2. Local
-                            3. Online""");
-                    int choice2 = takeUsersChoice();
-                    if (choice2 == 1) origin = "Memory";
-                    else if (choice2 == 2) origin = "File";
-                    else if (choice2 == 3) origin = "Database";
-
-                    System.out.println("""
-                            Repository to be overwritten:\s
-                            1. Memory
-                            2. Local
-                            3. Online""");
-                    choice2 = takeUsersChoice();
-                    if (choice2 == 1) target = "Memory";
-                    else if (choice2 == 2) target = "File";
-                    else if (choice2 == 3) target = "Database";
-
-                    System.out.println("Are you sure you want the data in the "+origin+" repository to overwrite the data of the "+target+" repository? (Y/N)");
-                    Scanner scanner = new Scanner(System.in);
-                    String choice3 = scanner.nextLine();
-                    if (choice3.equals("Y") || choice3.equals("y"))
-                    {
-                        overrrideRepository(origin, target);
+                        int choice1 = takeUsersChoice();
+                        String repositoryType = "";
+                        if (choice1 == 1)
+                            repositoryType = "Memory";
+                        else if (choice1 == 2)
+                            repositoryType = "File";
+                        else if (choice1 == 3)
+                            repositoryType = "Database";
+                        HotelService hotelService = createHotelServiceObject(repositoryType);
+                        HotelController hotelcontroller = new HotelController(hotelService);
+                        Console console = new Console(hotelcontroller);
+                        console.run(0);
+                        throw new RuntimeException("Exitted application");  //to break recursion
                     }
-                    else if (choice3.equals("N") || choice3.equals("n"))
-                    {
-                        System.out.println("\n\nCancelled Override\n");
+                    else if (choice == 2){
+                        String origin = "", target = "";
+                        System.out.println("""
+                            Choose which repository will be overridden:\s
+                            1. Local data will be replaced by Online data
+                            2. Online data will be replaced by Local data
+                            """);
+                        int choice2 = takeUsersChoice();
+                        if (choice2 == 1) {origin = "Database"; target = "File"; }
+                        else if (choice2 == 2) {origin = "File"; target = "Database";}
+
+                        System.out.println("Are you sure you want the data in the "+origin+" repository to overwrite the data of the "+target+" repository? (Y/N)");
+                        Scanner scanner = new Scanner(System.in);
+                        String choice3 = scanner.nextLine();
+                        if (choice3.equals("Y") || choice3.equals("y"))
+                        {
+                            if (target.equals("Database"))
+                            {
+                                System.out.println("Please reintroduce the administrator password: ");
+                                password = sc.nextLine();
+
+                                if (password.equals("HEXA123F!"))
+                                    overrrideRepository(origin, target);
+                            }
+                            else
+                                overrrideRepository(origin, target);
+                        }
+                        else if (choice3.equals("N") || choice3.equals("n"))
+                        {
+                            System.out.println("\n\nCancelled Override\n");
+                        }
+                        else System.out.println("Invalid input");
                     }
-                    else System.out.println("Invalid input");
+                    else if (choice == 0)
+                    {
+                        run(0);
+                        break;
+                    }
                 }
+
 
             }
             else throw new IllegalArgumentException("Invalid password, aborting...");
@@ -428,6 +439,94 @@ public class Console {
                 return new HotelService(receptionistRepository, reservationRepository, managerRepository, departmentRepository, customerRepository, cleanerRepository, roomRepository, roomCleanerRepository, timeDBRepository);
             }
             case "Memory" -> {
+                System.out.println("""
+                            Choose which repository to take data from:
+                            1. Local
+                            2. Online
+                        """);
+                Scanner sc = new Scanner(System.in);
+                int choice = sc.nextInt();
+                sc.nextLine();
+
+                if (choice == 1) {
+                    Repository<Receptionist> receptionistFileRepository = new FileRepository<Receptionist>("InFileRepository/receptionists.db");
+                    Repository<Reservation> reservationFileRepository = new FileRepository<Reservation>("InFileRepository/reservations.db");
+                    Repository<Manager> managerFileRepository = new FileRepository<Manager>("InFileRepository/managers.db");
+                    Repository<Department> departmentFileRepository = new FileRepository<Department>("InFileRepository/departments.db");
+                    Repository<Customer> customerFileRepository = new FileRepository<Customer>("InFileRepository/customers.db");
+                    Repository<Cleaner> cleanerFileRepository = new FileRepository<Cleaner>("InFileRepository/cleaners.db");
+                    Repository<Room> roomFileRepository = new FileRepository<Room>("InFileRepository/rooms.db");
+                    Repository<RoomCleaner> roomCleanerFileRepository = new FileRepository<RoomCleaner>("InFileRepository/roomCleaners.db");
+                    TimeDBRepository timeDBRepository = new TimeDBRepository("jdbc:postgresql://localhost/HotelManagement", "postgres", "User");
+
+                    Repository<Receptionist> receptionistRepository = new InMemoryRepository<>();
+                    Repository<Reservation> reservationRepository = new InMemoryRepository<>();
+                    Repository<Manager> managerRepository = new InMemoryRepository<>();
+                    Repository<Department> departmentRepository = new InMemoryRepository<>();
+                    Repository<Customer> customerRepository = new InMemoryRepository<>();
+                    Repository<Cleaner> cleanerRepository = new InMemoryRepository<>();
+                    Repository<Room> roomRepository = new InMemoryRepository<>();
+                    Repository<RoomCleaner> roomCleanerRepository = new InMemoryRepository<>();
+
+                    for (Receptionist receptionist: receptionistFileRepository.getAll())
+                        receptionistRepository.create(receptionist);
+                    for (Reservation reservation: reservationFileRepository.getAll())
+                        reservationRepository.create(reservation);
+                    for (Manager manager: managerFileRepository.getAll())
+                        managerRepository.create(manager);
+                    for (Department department: departmentFileRepository.getAll())
+                        departmentRepository.create(department);
+                    for (Customer customer: customerFileRepository.getAll())
+                        customerRepository.create(customer);
+                    for (Cleaner cleaner: cleanerFileRepository.getAll())
+                        cleanerRepository.create(cleaner);
+                    for (Room room: roomFileRepository.getAll())
+                        roomRepository.create(room);
+                    for (RoomCleaner roomCleaner: roomCleanerFileRepository.getAll())
+                        roomCleanerRepository.create(roomCleaner);
+
+                    return new HotelService(receptionistRepository, reservationRepository, managerRepository, departmentRepository, customerRepository, cleanerRepository, roomRepository, roomCleanerRepository, timeDBRepository);
+                }
+                else if (choice == 2) {
+                    ReceptionistDBRepository receptionistDBRepository = new ReceptionistDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
+                    ReservationDBRepository reservationDBRepository = new ReservationDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
+                    ManagerDBRepository managerDBRepository = new ManagerDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
+                    DepartmentDBRepository departmentDBRepository = new DepartmentDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
+                    CustomerDBRepository customerDBRepository = new CustomerDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
+                    CleanerDBRepository cleanerDBRepository = new CleanerDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
+                    RoomDBRepository roomDBRepository = new RoomDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
+                    RoomCleanerDBRepository roomCleanerDBRepository = new RoomCleanerDBRepository("jdbc:postgresql://localhost/HotelManagement", "postgres", "User");
+                    TimeDBRepository timeDBRepository = new TimeDBRepository("jdbc:postgresql://localhost/HotelManagement", "postgres", "User");
+
+                    Repository<Receptionist> receptionistRepository = new InMemoryRepository<>();
+                    Repository<Reservation> reservationRepository = new InMemoryRepository<>();
+                    Repository<Manager> managerRepository = new InMemoryRepository<>();
+                    Repository<Department> departmentRepository = new InMemoryRepository<>();
+                    Repository<Customer> customerRepository = new InMemoryRepository<>();
+                    Repository<Cleaner> cleanerRepository = new InMemoryRepository<>();
+                    Repository<Room> roomRepository = new InMemoryRepository<>();
+                    Repository<RoomCleaner> roomCleanerRepository = new InMemoryRepository<>();
+
+                    for (Receptionist receptionist: receptionistDBRepository.getAll())
+                        receptionistRepository.create(receptionist);
+                    for (Reservation reservation: reservationDBRepository.getAll())
+                        reservationRepository.create(reservation);
+                    for (Manager manager: managerDBRepository.getAll())
+                        managerRepository.create(manager);
+                    for (Department department: departmentDBRepository.getAll())
+                        departmentRepository.create(department);
+                    for (Customer customer: customerDBRepository.getAll())
+                        customerRepository.create(customer);
+                    for (Cleaner cleaner: cleanerDBRepository.getAll())
+                        cleanerRepository.create(cleaner);
+                    for (Room room: roomDBRepository.getAll())
+                        roomRepository.create(room);
+                    for (RoomCleaner roomCleaner: roomCleanerDBRepository.getAll())
+                        roomCleanerRepository.create(roomCleaner);
+
+                    return new HotelService(receptionistRepository, reservationRepository, managerRepository, departmentRepository, customerRepository, cleanerRepository, roomRepository, roomCleanerRepository, timeDBRepository);
+
+                }
             }
         }
 
@@ -444,45 +543,7 @@ public class Console {
      */
     void overrrideRepository(String origin, String target)
     {
-        if (origin.equals("Memory") && target.equals("File"))
-        {
-
-        }
-        else if (origin.equals("Memory") && target.equals("Database"))
-        {
-            ReceptionistDBRepository receptionistDBRepository = new ReceptionistDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
-            ReservationDBRepository reservationDBRepository = new ReservationDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
-            ManagerDBRepository managerDBRepository = new ManagerDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
-            DepartmentDBRepository departmentDBRepository = new DepartmentDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
-            CustomerDBRepository customerDBRepository = new CustomerDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
-            CleanerDBRepository cleanerDBRepository = new CleanerDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
-            RoomDBRepository roomDBRepository = new RoomDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
-            RoomCleanerDBRepository roomCleanerDBRepository = new RoomCleanerDBRepository("jdbc:postgresql://localhost/HotelManagement", "postgres", "User");
-
-            for (Receptionist receptionist: receptionistDBRepository.getAll())
-                reservationDBRepository.delete(receptionist.getId());
-            for (Reservation reservation: reservationDBRepository.getAll())
-                managerDBRepository.delete(reservation.getId());
-            for (Manager manager: managerDBRepository.getAll())
-                managerDBRepository.delete(manager.getId());
-            for (Department department: departmentDBRepository.getAll())
-                departmentDBRepository.delete(department.getId());
-            for (Customer customer: customerDBRepository.getAll())
-                customerDBRepository.delete(customer.getId());
-            for (Cleaner cleaner: cleanerDBRepository.getAll())
-                cleanerDBRepository.delete(cleaner.getId());
-            for (Room room: roomDBRepository.getAll())
-                roomDBRepository.delete(room.getId());
-            for (RoomCleaner roomCleaner: roomCleanerDBRepository.getAll())
-                roomCleanerDBRepository.delete(roomCleaner.getId());
-
-            //TODO
-        }
-        else if (origin.equals("File") && target.equals("Memory"))
-        {
-
-        }
-        else if (origin.equals("File") && target.equals("Database"))
+        if (origin.equals("File") && target.equals("Database"))
         {
             ReceptionistDBRepository receptionistDBRepository = new ReceptionistDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
             ReservationDBRepository reservationDBRepository = new ReservationDBRepository("jdbc:postgresql://localhost:5432/HotelManagement", "postgres", "User");
@@ -535,10 +596,6 @@ public class Console {
                 roomDBRepository.create(room);
             for (RoomCleaner roomCleaner: roomCleanerFileRepository.getAll())
                 roomCleanerDBRepository.create(roomCleaner);
-        }
-        else if (origin.equals("Database") && target.equals("Memory"))
-        {
-
         }
         else if (origin.equals("Database") && target.equals("File"))
         {
